@@ -1,0 +1,43 @@
+diff --git a/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.html b/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.html
+index 1a086904cc3c93cb0ff6e0ad0eab0de850638591..55399a8db294850eb008a1a23caade99bb1dde7f 100644
+--- a/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.html
++++ b/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.html
+@@ -17,6 +17,7 @@
+ <link rel="import" href="../route.html">
+ <link rel="import" href="../settings_shared_css.html">
+ <link rel="import" href="../settings_vars_css.html">
++<link rel="import" href="../brave_clear_browsing_data_on_exit_page/brave_clear_browsing_data_on_exit_page.html">
+ 
+ <dom-module id="settings-clear-browsing-data-dialog">
+   <template>
+@@ -117,6 +118,7 @@
+             selected="{{prefs.browser.last_clear_browsing_data_tab.value}}">
+           <paper-tab id="basicTabTitle">$i18n{basicPageTitle}</paper-tab>
+           <paper-tab id="advancedTabTitle">$i18n{advancedPageTitle}</paper-tab>
++          <paper-tab id="onExitTabTitle">$i18n{onExitPageTitle}</paper-tab>
+         </paper-tabs>
+       </div>
+       <div slot="body">
+@@ -242,6 +244,11 @@
+                 disabled="[[clearingInProgress_]]">
+             </settings-checkbox>
+           </div>
++          <settings-brave-clear-browsing-data-on-exit-page id="on-exit-tab"
++                                                           prefs="{{prefs}}"
++                                                           counters="[[counters_]]"
++                                                           on-clear-data-on-exit-page-change="updateSaveButtonState_">
++          </settings-brave-clear-browsing-data-on-exit-page>
+         </iron-pages>
+       </div>
+       <div slot="button-container">
+@@ -255,6 +262,10 @@
+                                                clearButtonDisabled_)]]">
+             $i18n{clearData}
+         </paper-button>
++        <paper-button id="saveOnExitSettingsConfirm" disabled hidden
++            class="action-button" on-click="saveOnExitSettings_">
++            $i18n{save}
++        </paper-button>
+       </div>
+       <div slot="footer"
+           hidden="[[!shouldShowFooter_(syncStatus.signedIn, diceEnabled_)]]">

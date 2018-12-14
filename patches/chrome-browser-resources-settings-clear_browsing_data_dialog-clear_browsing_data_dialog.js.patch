@@ -1,0 +1,54 @@
+diff --git a/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.js b/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.js
+index ba8db3241392d66e429a66dba47a5b740f3dfd28..5c4d7a205492f6907652f3ed6cfca87d2e7990ab 100644
+--- a/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.js
++++ b/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_dialog.js
+@@ -211,6 +211,7 @@ Polymer({
+     if (!tab)
+       return;
+     this.clearButtonDisabled_ = this.getSelectedDataTypes_(tab).length == 0;
++    this.updateButtonsVisibility_();
+   },
+ 
+   /**
+@@ -306,6 +307,7 @@ Polymer({
+     // Strip the common prefix, i.e. use only "<datatype>".
+     const matches = prefName.match(/^browser\.clear_data\.(\w+)$/);
+     this.set('counters_.' + assert(matches[1]), text);
++    this.$['on-exit-tab'].setCounter(matches[1], text);
+   },
+ 
+   /**
+@@ -443,4 +445,33 @@ Polymer({
+   shouldShowFooter_: function() {
+     return this.diceEnabled_ && !!this.syncStatus && !!this.syncStatus.signedIn;
+   },
++
++  /**
++   * Updates Clear and Save buttons visibility based on the selected tab.
++   * @private
++   */
++  updateButtonsVisibility_: function () {
++    const isOnExitTab = (this.$.tabs.selectedItem.id == 'on-exit-tab');
++    this.$.clearBrowsingDataConfirm.hidden = isOnExitTab;
++    this.$.saveOnExitSettingsConfirm.hidden = !isOnExitTab;
++  },
++
++  /**
++   * Updates Save button enabled state based on on-exit-tab's changed state.
++   * @private
++   */
++  updateSaveButtonState_: function () {
++    this.$.saveOnExitSettingsConfirm.disabled = !this.$['on-exit-tab'].isModified;
++  },
++
++  /**
++   * Saves on exit settings selections.
++   * @private
++   */
++  saveOnExitSettings_: function () {
++    this.$['on-exit-tab'].saveOnExitSettings();
++    this.updateSaveButtonState_();
++    if (!this.clearingInProgress_)
++      this.$.clearBrowsingDataDialog.close();
++  }
+ });
