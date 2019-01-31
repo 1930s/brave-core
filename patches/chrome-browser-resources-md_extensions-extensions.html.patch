@@ -1,0 +1,23 @@
+diff --git a/chrome/browser/resources/md_extensions/extensions.html b/chrome/browser/resources/md_extensions/extensions.html
+index bd5a7e1122a68e357bdf56a37494dc89cac34239..c0cbb38977cb4b5d5c84e5af145846e450a10ad6 100644
+--- a/chrome/browser/resources/md_extensions/extensions.html
++++ b/chrome/browser/resources/md_extensions/extensions.html
+@@ -20,8 +20,10 @@
+     .loading {
+       /* --google-blue-700 in disguise. Replaced when manager.html loads. */
+       border-top: 56px solid rgb(51, 103, 214);
++      border-image: var(--md-toolbar-color, linear-gradient(to right, rgb(248, 249, 250), rgb(248, 249, 250))) 56;
+     }
+ 
++<if expr="_google_chrome">
+     /* Note: .in-dev-mode is applied by i18n{loadTimeClasses}. */
+     .loading.in-dev-mode {
+       /* --google-blue-700: rgb(51, 103, 214); */
+@@ -30,6 +32,7 @@
+           #fff 56px, #fff 107px, #e0e0e0 107px) 108;
+       border-top: 108px solid;
+     }
++</if>
+ 
+     html,
+     body {

@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/resources/md_extensions/manager.html b/chrome/browser/resources/md_extensions/manager.html
+index a8d153e72080d55dc327e81d37013e9f47bf4664..21e0c016a425b04741c58def8769c8f471f068b5 100644
+--- a/chrome/browser/resources/md_extensions/manager.html
++++ b/chrome/browser/resources/md_extensions/manager.html
+@@ -2,7 +2,7 @@
+ 
+ <link rel="import" href="chrome://resources/cr_elements/cr_drawer/cr_drawer.html">
+ <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
+-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
++<link rel="import" href="chrome://brave-resources/br_elements/br_toolbar/br_toolbar.html">
+ <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
+ <link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
+ <link rel="import" href="chrome://resources/html/assert.html">
