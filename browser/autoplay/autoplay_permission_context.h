@@ -15,6 +15,10 @@ class AutoplayPermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
+  PermissionResult GetPermissionStatus(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const;
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;

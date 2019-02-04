@@ -5,9 +5,7 @@
 #include "brave/renderer/brave_content_settings_observer.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "brave/browser/brave_browser_process_impl.h"
 #include "brave/common/render_messages.h"
-#include "brave/components/brave_shields/browser/autoplay_whitelist_service.h"
 #include "brave/content/common/frame_messages.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -244,11 +242,6 @@ bool BraveContentSettingsObserver::AllowAutoplay(bool default_value) {
         return false;
     }
   }
-
-  // in the absence of an explicit block rule, check against the autoplay
-  // whitelist service
-  if (g_brave_browser_process->autoplay_whitelist_service()->ShouldAllowAutoplay(primary_url))
-    return true;
 
   blink::mojom::blink::PermissionServicePtr permission_service;
 
