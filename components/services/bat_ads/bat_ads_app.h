@@ -18,9 +18,7 @@ namespace bat_ads {
 
 class BatAdsApp : public service_manager::Service {
  public:
-  static std::unique_ptr<service_manager::Service> CreateService();
-
-  BatAdsApp();
+  BatAdsApp(service_manager::mojom::ServiceRequest request);
   ~BatAdsApp() override;
 
  private:

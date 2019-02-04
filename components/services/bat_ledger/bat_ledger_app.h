@@ -19,9 +19,6 @@ class BatLedgerApp : public service_manager::Service {
   BatLedgerApp(service_manager::mojom::ServiceRequest request);
   ~BatLedgerApp() override;
 
-  // Factory method for creating the service.
-  static std::unique_ptr<service_manager::Service> CreateService();
-
   // Lifescycle events that occur after the service has started to spinup.
   void OnStart() override;
   void OnBindInterface(const service_manager::BindSourceInfo& source_info,

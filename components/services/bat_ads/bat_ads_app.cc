@@ -9,24 +9,6 @@
 
 namespace bat_ads {
 
-namespace {
-
-void OnBatAdsCreatorRequest(
-    service_manager::ServiceContextRefFactory* ref_factory,
-    bat_ads::mojom::BatAdsServiceRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<BatAdsServiceImpl>(ref_factory->CreateRef()),
-      std::move(request));
-}
-
-}  // namespace
-
-// static
-std::unique_ptr<service_manager::Service>
-BatAdsApp::CreateService() {
-  return std::make_unique<BatAdsApp>();
-}
-
 BatAdsApp::BatAdsApp(service_manager::mojom::ServiceRequest request) :
     service_binding_(this, std::move(request)),
     service_keepalive_(&service_binding_, base::TimeDelta()) {
@@ -34,10 +16,7 @@ BatAdsApp::BatAdsApp(service_manager::mojom::ServiceRequest request) :
 
 BatAdsApp::~BatAdsApp() {}
 
-void BatAdsApp::OnStart() {
-  registry_.AddInterface(
-      base::Bind(&OnBatAdsCreatorRequest, ref_factory_.get()));
-}
+void BatAdsApp::OnStart() {}
 
 void BatAdsApp::OnBindInterface(
     const service_manager::BindSourceInfo& source_info,

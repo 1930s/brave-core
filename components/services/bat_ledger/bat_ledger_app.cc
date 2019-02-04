@@ -9,18 +9,6 @@
 
 namespace bat_ledger {
 
-namespace {
-
-void OnBatLedgerServiceRequest(
-    service_manager::ServiceContextRefFactory* ref_factory,
-    bat_ledger::mojom::BatLedgerServiceRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<bat_ledger::BatLedgerServiceImpl>(ref_factory->CreateRef()),
-      std::move(request));
-}
-
-} // namespace
-
 BatLedgerApp::BatLedgerApp(
         service_manager::mojom::ServiceRequest request) :
     service_binding_(this, std::move(request)),
@@ -29,16 +17,7 @@ BatLedgerApp::BatLedgerApp(
 
 BatLedgerApp::~BatLedgerApp() {}
 
-// static
-std::unique_ptr<service_manager::Service>
-BatLedgerApp::CreateService() {
-  return std::make_unique<BatLedgerApp>();
-}
-
-void BatLedgerApp::OnStart() {
-  registry_.AddInterface(
-      base::Bind(&OnBatLedgerServiceRequest, ref_factory_.get()));
-}
+void BatLedgerApp::OnStart() {}
 
 void BatLedgerApp::OnBindInterface(
     const service_manager::BindSourceInfo& source_info,

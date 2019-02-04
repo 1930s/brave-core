@@ -20,9 +20,6 @@ class TorLauncherService : public service_manager::Service {
   TorLauncherService(service_manager::mojom::ServiceRequest request);
   ~TorLauncherService() override;
 
-  // Factory method for creating the service.
-  static std::unique_ptr<service_manager::Service> CreateService();
-
   // Lifescycle events that occur after the service has started to spinup.
   void OnStart() override;
   void OnBindInterface(const service_manager::BindSourceInfo& source_info,

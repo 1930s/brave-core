@@ -10,18 +10,6 @@
 #include "brave/utility/tor/tor_launcher_impl.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
-namespace {
-
-void OnTorLauncherRequest(
-    service_manager::ServiceContextRefFactory* ref_factory,
-    tor::mojom::TorLauncherRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<tor::TorLauncherImpl>(ref_factory->CreateRef()),
-      std::move(request));
-}
-
-}  // namespace
-
 namespace tor {
 
 TorLauncherService::TorLauncherService(
@@ -32,15 +20,7 @@ TorLauncherService::TorLauncherService(
 
 TorLauncherService::~TorLauncherService() {}
 
-std::unique_ptr<service_manager::Service>
-TorLauncherService::CreateService() {
-  return std::make_unique<TorLauncherService>();
-}
-
-void TorLauncherService::OnStart() {
-  registry_.AddInterface(
-      base::Bind(&OnTorLauncherRequest, ref_factory_.get()));
-}
+void TorLauncherService::OnStart() {}
 
 void TorLauncherService::OnBindInterface(
     const service_manager::BindSourceInfo& source_info,
