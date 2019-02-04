@@ -21,7 +21,8 @@ namespace braveledger_bat_helper {
   void DecodeURLChars(const std::string& input, std::string& output) {
 #if defined CHROMIUM_BUILD
     url::RawCanonOutputW<1024> canonOutput;
-    url::DecodeURLEscapeSequences(input.c_str(), input.length(), &canonOutput);
+    url::DecodeURLEscapeSequences(input.c_str(), input.length(),
+        url::DecodeURLMode::kUTF8OrIsomorphic, &canonOutput);
     output = base::UTF16ToUTF8(base::StringPiece16(canonOutput.data(), canonOutput.length()));
 #else
     //TODO: to implement
