@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service_context.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "services/service_manager/public/cpp/service_binding.h"
 
 namespace bat_ledger {
 
