@@ -21,7 +21,11 @@ void OnBatLedgerServiceRequest(
 
 } // namespace
 
-BatLedgerApp::BatLedgerApp() {}
+BatLedgerApp::BatLedgerApp(
+        service_manager::mojom::ServiceRequest request) :
+    service_binding_(this, std::move(request)),
+    service_keepalive_(&service_binding_, base::TimeDelta()) {
+}
 
 BatLedgerApp::~BatLedgerApp() {}
 
@@ -32,8 +36,6 @@ BatLedgerApp::CreateService() {
 }
 
 void BatLedgerApp::OnStart() {
-  ref_factory_.reset(new service_manager::ServiceContextRefFactory(
-      context()->CreateQuitClosure()));
   registry_.AddInterface(
       base::Bind(&OnBatLedgerServiceRequest, ref_factory_.get()));
 }

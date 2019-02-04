@@ -27,13 +27,14 @@ BatAdsApp::CreateService() {
   return std::make_unique<BatAdsApp>();
 }
 
-BatAdsApp::BatAdsApp() {}
+BatAdsApp::BatAdsApp(service_manager::mojom::ServiceRequest request) :
+    service_binding_(this, std::move(request)),
+    service_keepalive_(&service_binding_, base::TimeDelta()) {
+}
 
 BatAdsApp::~BatAdsApp() {}
 
 void BatAdsApp::OnStart() {
-  ref_factory_ = std::make_unique<service_manager::ServiceContextRefFactory>(
-      context()->CreateQuitClosure());
   registry_.AddInterface(
       base::Bind(&OnBatAdsCreatorRequest, ref_factory_.get()));
 }

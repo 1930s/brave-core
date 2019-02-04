@@ -24,7 +24,11 @@ void OnTorLauncherRequest(
 
 namespace tor {
 
-TorLauncherService::TorLauncherService() {}
+TorLauncherService::TorLauncherService(
+        service_manager::mojom::ServiceRequest request) :
+    service_binding_(this, std::move(request)),
+    service_keepalive_(&service_binding_, base::TimeDelta()) {
+}
 
 TorLauncherService::~TorLauncherService() {}
 
@@ -34,8 +38,6 @@ TorLauncherService::CreateService() {
 }
 
 void TorLauncherService::OnStart() {
-  ref_factory_.reset(new service_manager::ServiceContextRefFactory(
-      context()->CreateQuitClosure()));
   registry_.AddInterface(
       base::Bind(&OnTorLauncherRequest, ref_factory_.get()));
 }
