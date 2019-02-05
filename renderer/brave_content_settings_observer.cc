@@ -249,15 +249,15 @@ bool BraveContentSettingsObserver::AllowAutoplay(bool default_value) {
     ->GetInterface(mojo::MakeRequest(&permission_service));
 
   if (permission_service.get()) {
-    auto descriptor = blink::mojom::blink::PermissionDescriptor::New();
-    descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
+    auto has_permission_descriptor = blink::mojom::blink::PermissionDescriptor::New();
+    has_permission_descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
     blink::mojom::blink::PermissionStatus status;
-    if (permission_service->HasPermission(std::move(descriptor), &status)) {
+    if (permission_service->HasPermission(std::move(has_permissiondescriptor), &status)) {
       allow = status == blink::mojom::blink::PermissionStatus::GRANTED;
       if (!allow) {
-        auto descriptor2 = blink::mojom::blink::PermissionDescriptor::New();
-        descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
-        permission_service->RequestPermission(std::move(descriptor2), true,
+        auto request_permission_descriptor = blink::mojom::blink::PermissionDescriptor::New();
+        request_permission_descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
+        permission_service->RequestPermission(std::move(request_permission_descriptor), true,
                                               base::DoNothing());
       }
     }
