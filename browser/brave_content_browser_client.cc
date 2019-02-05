@@ -39,7 +39,6 @@
 #include "content/public/common/service_names.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 
 using content::BrowserThread;
 using content::RenderFrameHost;
@@ -232,10 +231,7 @@ const service_manager::Manifest& GetBraveContentBrowserOverlayManifest() {
 }
 
 base::Optional<service_manager::Manifest>
-ChromeContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
-
-
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+BraveContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
   if (name == content::mojom::kBrowserServiceName)
     return GetBraveContentBrowserOverlayManifest();
   return ChromeContentBrowserClient::GetServiceManifestOverlay(name);
