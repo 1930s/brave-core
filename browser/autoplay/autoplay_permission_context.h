@@ -15,6 +15,7 @@ class AutoplayPermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
+
   PermissionResult GetPermissionStatus(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

@@ -75,14 +75,8 @@ AutoplayWhitelistService::~AutoplayWhitelistService() {
 }
 
 bool AutoplayWhitelistService::ShouldAllowAutoplay(const GURL& url) {
-  LOG(ERROR) << "entering ShowAllowAutoplay";
-  return false;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(ERROR) << "sequence check passed";
-  std::string host = url.host();
-  LOG(ERROR) << host.c_str();
-  return false;
-  //return autoplay_whitelist_client_->matchesHost(host.c_str());
+  return autoplay_whitelist_client_->matchesHost(url.host().c_str());
 }
 
 void AutoplayWhitelistService::OnDATFileDataReady() {

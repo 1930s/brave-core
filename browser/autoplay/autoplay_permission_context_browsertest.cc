@@ -45,11 +45,11 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(embedded_test_server()->Start());
 
       autoplay_method_url_ =
-        embedded_test_server()->GetURL("a.com", "/autoplay_by_method.html");
+          embedded_test_server()->GetURL("a.com", "/autoplay_by_method.html");
       autoplay_attr_url_ =
-        embedded_test_server()->GetURL("a.com", "/autoplay_by_attr.html");
+          embedded_test_server()->GetURL("a.com", "/autoplay_by_attr.html");
       autoplay_method_muted_url_ =
-        embedded_test_server()->GetURL("a.com", "/autoplay_by_method_muted.html");
+          embedded_test_server()->GetURL("a.com", "/autoplay_by_method_muted.html");
       autoplay_attr_muted_url_ =
         embedded_test_server()->GetURL("a.com", "/autoplay_by_attr_muted.html");
       file_autoplay_method_url_ =
@@ -58,6 +58,8 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
       file_autoplay_attr_url_ =
         GURL("file://" + test_data_dir.AsUTF8Unsafe() +
              "/autoplay_by_attr.html");
+      whitelist_autoplay_url_ =
+          embedded_test_server()->GetURL("example.com", "/autoplay_by_attr.html");
 
       GURL pattern_url = embedded_test_server()->GetURL("a.com", "/index.html");
       top_level_page_pattern_ =
@@ -75,6 +77,7 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
     const GURL& autoplay_attr_muted_url() { return autoplay_attr_muted_url_; }
     const GURL& file_autoplay_method_url() { return file_autoplay_method_url_; }
     const GURL& file_autoplay_attr_url() { return file_autoplay_attr_url_; }
+    const GURL& whitelist_autoplay_url() { return whitelist_autoplay_url_; }
 
     const ContentSettingsPattern& top_level_page_pattern() {
       return top_level_page_pattern_;
@@ -134,6 +137,7 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
     GURL autoplay_attr_muted_url_;
     GURL file_autoplay_method_url_;
     GURL file_autoplay_attr_url_;
+    GURL whitelist_autoplay_url_;
     ContentSettingsPattern top_level_page_pattern_;
     std::unique_ptr<ChromeContentClient> content_client_;
     std::unique_ptr<BraveContentBrowserClient> browser_content_client_;
@@ -492,6 +496,25 @@ IN_PROC_BROWSER_TEST_F(AutoplayPermissionContextBrowserTest, FileAutoplay) {
   EXPECT_FALSE(popup_prompt_factory->RequestTypeSeen(
               PermissionRequestType::PERMISSION_AUTOPLAY));
   EXPECT_EQ(0, popup_prompt_factory->TotalRequestCount());
+  EXPECT_TRUE(ExecuteScriptAndExtractString(contents(),
+      kVideoPlayingDetect, &result));
+  EXPECT_EQ(result, kVideoPlaying);
+}
+
+// Default allow autoplay on URLs in whitelist
+IN_PROC_BROWSER_TEST_F(AutoplayPermissionContextBrowserTest, WhitelistAutoplay) {
+  std::string result;
+  PermissionRequestManager* manager = PermissionRequestManager::FromWebContents(
+      contents());
+  auto popup_prompt_factory =
+      std::make_unique<MockPermissionPromptFactory>(manager);
+
+  NavigateToURLUntilLoadStop(whitelist_autoplay_url());
+  EXPECT_FALSE(popup_prompt_factory->is_visible());
+  EXPECT_FALSE(popup_prompt_factory->RequestTypeSeen(
+              PermissionRequestType::PERMISSION_AUTOPLAY));
+  EXPECT_EQ(0, popup_prompt_factory->TotalRequestCount());
+  WaitForPlaying();
   EXPECT_TRUE(ExecuteScriptAndExtractString(contents(),
       kVideoPlayingDetect, &result));
   EXPECT_EQ(result, kVideoPlaying);
