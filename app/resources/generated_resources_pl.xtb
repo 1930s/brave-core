@@ -958,6 +958,7 @@
 <translation id="8079938625609335826">Aby korzystać ze wszystkich swoich rozszerzeń na innych urządzeniach, włącz synchronizację.</translation>
 <translation id="4977942889532008999">Potwierdź dostęp</translation>
 <translation id="5780011244986845107">Wybrany folder zawiera poufne pliki. Czy na pewno chcesz przyznać aplikacji "<ph name="APP_NAME">$1</ph>" stały dostęp do odczytu tego folderu?</translation>
+<translation id="5365881113273618889">Wybrany folder zawiera poufne pliki. Czy na pewno chcesz przyznać aplikacji "<ph name="APP_NAME">$1</ph>" stały dostęp do zapisu tego folderu?</translation>
 <translation id="6220413761270491930">Błąd podczas ładowania rozszerzenia</translation>
 <translation id="5707185214361380026">Nie udało się wczytać rozszerzenia z:</translation>
 <translation id="7341834142292923918">Chce mieć dostęp do tej strony</translation>
@@ -1228,6 +1229,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="4628948037717959914">Zdjęcie</translation>
 <translation id="8033827949643255796">wybrano</translation>
+<translation id="3497560059572256875">Udostępnij Doodle</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2200094388063410062">E-mail</translation>
@@ -1348,6 +1350,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="3681311097828166361">Dziękujemy za opinię. Jesteś teraz offline, więc Twoje zgłoszenie zostanie wysłane później.</translation>
 <translation id="8713570323158206935">Wyślij <ph name="BEGIN_LINK1"/>informacje o systemie<ph name="END_LINK1"/></translation>
 <translation id="8642895855701880552">Wyślij <ph name="BEGIN_LINK1">&lt;a href="#" id="sys-info-url"&gt;</ph>informacje o systemie<ph name="END_LINK1">&lt;/a&gt;</ph></translation>
+<translation id="7292696521213967957">Informacje do debugowania Asystenta</translation>
 <translation id="8329196515830093443">Plik zostanie wysłany do Brave Software w celu debugowania</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="5367091008316207019">Odczytuję plik..</translation>
@@ -1543,6 +1546,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="473546211690256853">To konto jest zarządzane w domenie <ph name="DOMAIN"/></translation>
 <translation id="622537739776246443">Profil zostanie usunięty</translation>
 <translation id="5632566673632479864">Twoje konto <ph name="EMAIL"/> nie może być już kontem podstawowym. To konto jest zarządzane przez <ph name="DOMAIN"/>, dlatego Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia.</translation>
+<translation id="8118488170956489476">Twoja <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>przeglądarka jest zarządzana<ph name="END_LINK">&lt;/a&gt;</ph> przez Twoją organizację</translation>
 <translation id="8168435359814927499">Treści</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="3202131003361292969">Ścieżka</translation>
@@ -1904,6 +1908,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="5074318175948309511">Aby nowe ustawienia zaczęły działać, być może trzeba odświeżyć tę stronę.</translation>
 <translation id="8282947398454257691">Odczytywanie unikalnego identyfikatora Twojego urządzenia</translation>
 <translation id="8329449853370113380"><ph name="URL"/> chce odtworzyć treści chronione. Tożsamość Twojego urządzenia zostanie zweryfikowana przez Brave Software.</translation>
+<translation id="2650609753175229582"><ph name="URL">$1</ph> chce odtworzyć treści chronione. Tożsamość Twojego urządzenia zostanie zweryfikowana przez Brave i może być dostępna dla tej witryny.</translation>
 <translation id="1322046419516468189">Swoje zapisane hasła znajdziesz tutaj: <ph name="SAVED_PASSWORDS_STORE"/></translation>
 <translation id="3312599731068160560">https://passwords.google.com</translation>
 <translation id="5297082477358294722">Hasło zostało zapisane. Swoje zapisane hasła znajdziesz tutaj: <ph name="SAVED_PASSWORDS_STORE"/>.</translation>
@@ -2149,7 +2154,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="8480869669560681089">Nieznane urządzenie firmy <ph name="VENDOR_NAME"/></translation>
 <translation id="1500297251995790841">Nieznane urządzenie [<ph name="VENDOR_ID"/>:<ph name="PRODUCT_ID"/>]</translation>
-<translation id="8750155211039279868"><ph name="Origin">$1</ph> chce połączyć się z portem szeregowym</translation>
+<translation id="8750155211039279868"><ph name="ORIGIN">$1<ex>www.google.com</ex></ph> wants to connect to a serial port</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME">$1</ph>" chce połączyć się z portem szeregowym</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME">$1</ph> (<ph name="DEVICE_PATH">$2</ph>)</translation>
 <translation id="1587562069597918292"><ph name="DEVICE_PATH">$1</ph></translation>
@@ -2383,6 +2388,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="228758327756499171"><ph name="NUMBER_OF_MORE_APPS">$1</ph> aplikacji</translation>
 <translation id="7207631048330366454">Wyszukaj aplikacje</translation>
 <translation id="9011424611726486705">Otwórz ustawienia witryny</translation>
+<translation id="4739098340603978916">Rozmiar: <ph name="APP_SIZE">$1</ph></translation>
 <translation id="4291934469232591280">Wersja: <ph name="VERSION">$1</ph></translation>
 <translation id="6005695835120147974">Router multimediów</translation>
 <translation id="7787308148023287649">Wyświetl na innym ekranie</translation>
@@ -2633,9 +2639,12 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="6146563240635539929">Filmy</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD"/>Przestroga:<ph name="END_BOLD"/> te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku. <ph name="BEGIN_LINK"/>Więcej informacji<ph name="END_LINK"/></translation>
+<translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES">$1</ph> bajtów</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB">$1</ph> KB</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB">$1</ph> MB</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB">$1</ph> GB</translation>
+<translation id="7827012282502221009"><ph name="NUMBER_OF_TB">$1</ph> TB</translation>
+<translation id="1589128298353575783"><ph name="NUMBER_OF_PB">$1</ph> PB</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -2727,6 +2736,8 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="4801956050125744859">Zachowaj obie pozycje</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1556189134700913550">Zastosuj do wszystkich</translation>
+<translation id="988685240266037636">Plik o nazwie "<ph name="FILE_NAME">$1</ph>" już istnieje. Czy chcesz go zamienić?</translation>
+<translation id="9038620279323455325">Plik o nazwie "<ph name="FILE_NAME">$1</ph>" już istnieje. Wybierz inną nazwę.</translation>
 <translation id="4212740939091998969">Folder o nazwie "<ph name="FOLDER_NAME">$1</ph>" już istnieje. Wybierz inną nazwę.</translation>
 <translation id="1497522201463361063">Nie można zmienić nazwy pliku „<ph name="FILE_NAME"/>”. <ph name="ERROR_MESSAGE"/></translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
@@ -2794,10 +2805,12 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="6133173853026656527">Przenoszę <ph name="FILE_NAME"/>...</translation>
 <translation id="7654209398114106148">Przenoszenie <ph name="NUMBER_OF_ITEMS">$1</ph> plików...</translation>
 <translation id="6007237601604674381">Przenoszenie nie powiodło się. <ph name="ERROR_MESSAGE"/></translation>
+<translation id="1933345018156373194">Przenoszenie nie powidło się, wystąpił nieoczekiwany błąd: <ph name="ERROR_MESSAGE">$1</ph></translation>
 <translation id="3326821416087822643">Pakuję <ph name="FILE_NAME"/>...</translation>
 <translation id="1722487484194605434">Pakowanie <ph name="NUMBER_OF_ITEMS">$1</ph> plików...</translation>
 <translation id="8810671769985673465">Pakowanie nie powiodło się. Plik o nazwie "<ph name="FILE_NAME">$1</ph>" już istnieje</translation>
 <translation id="9133055936679483811">Pakowanie nie powiodło się. <ph name="ERROR_MESSAGE"/></translation>
+<translation id="4973970068702235170">Pakowanie nie powiodło się, wystąpił nieoczekiwany błąd: <ph name="ERROR_MESSAGE">$1</ph></translation>
 <translation id="653019979737152879">Synchronizuję <ph name="FILE_NAME"/>...</translation>
 <translation id="8579285237314169903">Synchronizuję elementy – <ph name="NUMBER_OF_FILES"/>...</translation>
 <translation id="8137331602592933310">Plik „<ph name="FILENAME"/>” został Ci udostępniony. Nie możesz go usunąć, ponieważ nie jesteś jego właścicielem.</translation>
@@ -2817,6 +2830,7 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="1464724975715666883">1 błąd.</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT"/>.</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
+<translation id="2225536596944493418">Czy na pewno chcesz usunąć <ph name="NUMBER_OF_ITEMS">$1</ph> elementów?</translation>
 <translation id="7953739707111622108">Nie można otworzyć urządzenia, ponieważ jego system plików nie został rozpoznany.</translation>
 <translation id="3726463242007121105">Nie można otworzyć urządzenia, ponieważ jego system plików nie jest obsługiwany.</translation>
 <translation id="3414856743105198592">Formatowanie nośnika wymiennego spowoduje usunięcie wszystkich danych. Czy chcesz kontynuować?</translation>
@@ -2903,6 +2917,7 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="3072401511615920367">Ten plik został opracowany z myślą o komputerach Mac. Jest on niezgodny z Twoim urządzeniem z Brave OS. Spróbuj znaleźć aplikację zastępczą w <ph name="BEGIN_LINK"/>Brave Web Store<ph name="END_LINK"/>. <ph name="BEGIN_LINK_HELP"/>Więcej informacji<ph name="END_LINK_HELP"/></translation>
 <translation id="7589661784326793847">Chwileczkę</translation>
 <translation id="3096967955765855393">Stale szukamy rozwiązań, dzięki którym przeglądanie internetu będzie bezpieczniejsze. Wcześniej każda strona mogła poprosić o dodanie rozszerzenia do przeglądarki. W nowszych wersjach Brave Software Brave musisz dodać rozszerzenie na stronie Rozszerzenia, by wyraźnie poinformować przeglądarkę, że chcesz je zainstalować. <ph name="BEGIN_LINK"/>Więcej informacji<ph name="END_LINK"/></translation>
+<translation id="4892969127351273348">Nie można otworzyć pliku za pomocą aplikacji <ph name="APP_NAME">$1</ph></translation>
 <translation id="52446585071384036">Aby otworzyć plik za pomocą <ph name="APP_NAME">$1</ph> skopuj go najpierw do folderu w systemie Linux.</translation>
 <translation id="5368191757080475556">Udostępnianie folderu Linuksowi</translation>
 <translation id="5857774240076772505">Przyznaj uprawnienia aplikacjom dla systemu Linux na modyfikowanie plików w folderze <ph name="FOLDER_NAME">$1</ph></translation>
@@ -3118,6 +3133,7 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="1834538809763482401">Używaj na Bravebooku narzędzi, edytorów i IDE na Linuksa. &lt;a target="_blank" href="<ph name="URL"/>"&gt;Więcej informacji&lt;/a&gt;</translation>
 <translation id="6869910261738842136">Usuń aplikacje na Linuksa z Bravebooka</translation>
 <translation id="1529899284660134226">Zarządzaj udostępnionymi plikami i folderami</translation>
+<translation id="6697690052557311665">Aby udostępnić, kliknij prawym przyciskiem folder w aplikacji Pliki, a następnie wybierz opcję "Udostępnij w systemie Linux".</translation>
 <translation id="3726137731714254362">Usunięcie folderów z tego miejsca spowoduje zatrzymanie udostępniania, ale nie spowoduje usunięcia plików.</translation>
 <translation id="5187892128515678283">Udostępnij urządzenie USB w systemie Linux, włączając przełącznik. Udostępnianie będzie trwało tylko do momentu odłączenia urządzenia.</translation>
 <translation id="2295473777859797944">Sklep Brave Software Play</translation>
@@ -4345,6 +4361,7 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="7885253890047913815">Ostatnie urządzenia docelowe</translation>
 <translation id="4929386379796360314">Miejsca docelowe drukowania</translation>
 <translation id="85131123767224576">Zobacz więcej</translation>
+<translation id="597235323114979258">Zobacz więcej miejsc docelowych</translation>
 <translation id="3899879303189199559">Offline od ponad roku</translation>
 <translation id="3154429428035006212">Offline od ponad miesiąca</translation>
 <translation id="5265562206369321422">Offline od ponad tygodnia</translation>
@@ -4391,6 +4408,7 @@ Osoby z wolnym połączeniem mogą nie zobaczyć treści, które przesyłasz.</
 <translation id="7681095912841365527">Strona może używać Bluetootha</translation>
 <translation id="3085412380278336437">Strona może używać kamery</translation>
 <translation id="9180380851667544951">Strona może udostępniać ekran</translation>
+<translation id="4922897038695506037"><ph name="URL_HOST">$1<ex>google.com</ex></ph> żąda dodatkowych uprawnień.</translation>
 <translation id="4992630054488400221">Aby korzystać z Brave w rzeczywistości wirtualnej, zainstaluj lub zaktualizuj Klawiaturę Daydream</translation>
 <translation id="983511809958454316">Ta funkcja nie jest obsługiwana w rzeczywistości wirtualnej</translation>
 <translation id="4008291085758151621">Informacje o stronie nie są dostępne w rzeczywistości wirtualnej</translation>
