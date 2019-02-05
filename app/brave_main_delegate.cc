@@ -36,8 +36,6 @@
 #if !defined(CHROME_MULTIPLE_DLL_BROWSER)
 base::LazyInstance<BraveContentRendererClient>::DestructorAtExit
     g_brave_content_renderer_client = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<BraveContentUtilityClient>::DestructorAtExit
-    g_brave_content_utility_client = LAZY_INSTANCE_INITIALIZER;
 #endif
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
 base::LazyInstance<BraveContentBrowserClient>::DestructorAtExit
