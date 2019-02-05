@@ -222,6 +222,9 @@ const service_manager::Manifest& GetBraveContentBrowserOverlayManifest() {
     MaybeAddTestInterfaces(
         service_manager::ManifestBuilder()
             .ExposeCapability("browser",
+                service_manager::Manifest::InterfaceList<
+                    chrome::mojom::SearchBouncer,
+                    heap_profiling::mojom::ProfilingClient>())
             .RequireCapability("bat_ads", "bat_ads")
             .RequireCapability("bat_ledger", "bat_ledger")
             .RequireCapability("tor_launcher", "tor_launcher")
