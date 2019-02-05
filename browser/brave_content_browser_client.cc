@@ -38,7 +38,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/service_names.mojom.h"
 #include "extensions/buildflags/buildflags.h"
-#include "services/service_manager/embedder/manifest_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
