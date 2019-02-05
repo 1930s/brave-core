@@ -216,32 +216,29 @@ BraveContentBrowserClient::GetNavigationUIData(
   TorProfileServiceFactory::SetTorNavigationUIData(profile,
                                                    navigation_ui_data.get());
   return std::move(navigation_ui_data);
-
 }
 
-std::unique_ptr<base::Value>
-BraveContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
-  auto chrome_overlay =
-    ChromeContentBrowserClient::GetServiceManifestOverlay(name);
+const service_manager::Manifest& GetBraveContentBrowserOverlayManifest() {
+  static base::NoDestructor<service_manager::Manifest> manifest {
+    MaybeAddTestInterfaces(
+        service_manager::ManifestBuilder()
+            .ExposeCapability("browser",
+            .RequireCapability("bat_ads", "bat_ads")
+            .RequireCapability("bat_ledger", "bat_ledger")
+            .RequireCapability("tor_launcher", "tor_launcher")
+            .Build())
+  };
+  return *manifest;
+}
+
+base::Optional<service_manager::Manifest>
+ChromeContentBrowserClient::GetServiceManifestOverlay(base::StringPiece name) {
+
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  int id = -1;
   if (name == content::mojom::kBrowserServiceName)
-    id = IDR_BRAVE_CONTENT_BROWSER_MANIFEST_OVERLAY;
-  else if (name == content::mojom::kPackagedServicesServiceName)
-    id = IDR_BRAVE_CONTENT_PACKAGED_SERVICES_MANIFEST_OVERLAY;
-  else
-    return chrome_overlay;
-
-  base::StringPiece manifest_contents =
-      rb.GetRawDataResourceForScale(id, ui::ScaleFactor::SCALE_FACTOR_NONE);
-
-  auto brave_overlay = base::JSONReader::Read(manifest_contents);
-
-  service_manager::MergeManifestWithOverlay(brave_overlay.get(),
-                                            chrome_overlay.get());
-
-  return brave_overlay;
+    return GetBraveContentBrowserOverlayManifest();
+  return ChromeContentBrowserClient::GetServiceManifestOverlay(name);
 }
 
 void BraveContentBrowserClient::AdjustUtilityServiceProcessCommandLine(
