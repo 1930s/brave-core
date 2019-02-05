@@ -12,7 +12,11 @@ namespace extensions {
 
 void RegisterChromeManifestHandlers() {
   RegisterChromeManifestHandlers_INTERNAL();
-  (new PDFJSOverridesHandler)->Register();
+
+  // TODO(devlin): Pass in |registry| rather than Get()ing it.
+  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
+  DCHECK(!ManifestHandler::IsRegistrationFinalized());
+  registry->RegisterHandler(std::make_unique<PDFJSOverridesHandler>());
 }
 
 }  // namespace extensions
