@@ -74,15 +74,6 @@ BraveMainDelegate::CreateContentRendererClient() {
 #endif
 }
 
-content::ContentUtilityClient*
-BraveMainDelegate::CreateContentUtilityClient() {
-#if defined(CHROME_MULTIPLE_DLL_BROWSER)
-  return NULL;
-#else
-  return g_brave_content_utility_client.Pointer();
-#endif
-}
-
 void BraveMainDelegate::PreSandboxStartup() {
   ChromeMainDelegate::PreSandboxStartup();
 #if defined(OS_POSIX)
