@@ -15,14 +15,6 @@
 // define new enum
 enum class OmniboxTint { DARK, LIGHT, NATIVE, PRIVATE };
 
-#define GetOmniboxColor GetOmniboxColor_ChromiumImpl
 #include "../../../chrome/browser/ui/omnibox/omnibox_theme.h"
-#undef GetOmniboxColor
 
-// Returns the color for the given |part| and |tint|. An optional |state| can be
-// provided for OmniboxParts that support stateful colors.
-SkColor GetOmniboxColor(OmniboxPart part,
-                        OmniboxTint tint,
-                        OmniboxPartState state = OmniboxPartState::NORMAL);
-
-#endif
+#endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_OVERRIDE_
