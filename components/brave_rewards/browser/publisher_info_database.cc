@@ -302,22 +302,22 @@ PublisherInfoDatabase::GetPanelPublisher(
   bool initialized = Init();
   DCHECK(initialized);
 
-  if (!initialized) {
+  if (!initialized || filter.id.empty()) {
     return nullptr;
   }
 
   sql::Statement info_sql(db_.GetUniqueStatement(
-      "SELECT pi.publisher_id, pi.name, pi.url, pi.favIcon, pi.provider, "
-      "pi.verified, pi.excluded, ai.percent FROM publisher_info AS pi "
-      "LEFT JOIN activity_info AS ai ON pi.publisher_id = ai.publisher_id "
-      "WHERE pi.publisher_id=? AND ((ai.month = ? "
-      "AND ai.year = ? AND ai.reconcile_stamp = ?) OR "
-      "ai.percent IS NULL) LIMIT 1"));
+      "SELECT pi.publisher_id, pi.name, pi.url, pi.favIcon, "
+      "pi.provider, pi.verified, pi.excluded, "
+      "("
+      "SELECT IFNULL(percent, 0) FROM activity_info WHERE "
+      "publisher_id = ? AND reconcile_stamp = ? "
+      ") as percent "
+      "FROM publisher_info AS pi WHERE pi.publisher_id = ? LIMIT 1"));
 
   info_sql.BindString(0, filter.id);
-  info_sql.BindInt(1, filter.month);
-  info_sql.BindInt(2, filter.year);
-  info_sql.BindInt64(3, filter.reconcile_stamp);
+  info_sql.BindInt64(1, filter.reconcile_stamp);
+  info_sql.BindString(2, filter.id);
 
   if (info_sql.Step()) {
     std::unique_ptr<ledger::PublisherInfo> info;
@@ -411,7 +411,7 @@ bool PublisherInfoDatabase::InsertOrUpdateActivityInfo(
   bool initialized = Init();
   DCHECK(initialized);
 
-  if (!initialized) {
+  if (!initialized || info.id.empty()) {
     return false;
   }
 
@@ -434,9 +434,35 @@ bool PublisherInfoDatabase::InsertOrUpdateActivityInfo(
   activity_info_insert.BindInt(5, info.month);
   activity_info_insert.BindInt(6, info.year);
   activity_info_insert.BindInt64(7, info.reconcile_stamp);
-  activity_info_insert.BindInt64(8, info.visits);
+  activity_info_insert.BindInt(8, info.visits);
 
   return activity_info_insert.Run();
+}
+
+bool PublisherInfoDatabase::InsertOrUpdateActivityInfos(
+    const ledger::PublisherInfoList& list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool initialized = Init();
+  DCHECK(initialized);
+
+  if (!initialized || list.size() == 0) {
+    return false;
+  }
+
+  sql::Transaction transaction(&GetDB());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  for (const auto& info : list) {
+    if (!InsertOrUpdateActivityInfo(info)) {
+      transaction.Rollback();
+      return false;
+    }
+  }
+
+  return transaction.Commit();
 }
 
 bool PublisherInfoDatabase::GetActivityList(
@@ -458,7 +484,7 @@ bool PublisherInfoDatabase::GetActivityList(
   std::string query = "SELECT ai.publisher_id, ai.duration, ai.score, "
                       "ai.percent, ai.weight, pi.verified, pi.excluded, "
                       "ai.month, ai.year, pi.name, pi.url, pi.provider, "
-                      "pi.favIcon, ai.reconcile_stamp "
+                      "pi.favIcon, ai.reconcile_stamp, ai.visits "
                       "FROM activity_info AS ai "
                       "INNER JOIN publisher_info AS pi "
                       "ON ai.publisher_id = pi.publisher_id "
@@ -497,6 +523,10 @@ bool PublisherInfoDatabase::GetActivityList(
 
   if (filter.percent > 0) {
     query += " AND ai.percent >= ?";
+  }
+
+  if (filter.min_visits > 0) {
+    query += " AND ai.visits >= ?";
   }
 
   if (!filter.non_verified) {
@@ -554,6 +584,10 @@ bool PublisherInfoDatabase::GetActivityList(
     info_sql.BindInt(column++, filter.percent);
   }
 
+  if (filter.min_visits > 0) {
+    info_sql.BindInt(column++, filter.min_visits);
+  }
+
   while (info_sql.Step()) {
     std::string id(info_sql.ColumnString(0));
     ledger::ACTIVITY_MONTH month(
@@ -572,6 +606,7 @@ bool PublisherInfoDatabase::GetActivityList(
     info.provider = info_sql.ColumnString(11);
     info.favicon_url = info_sql.ColumnString(12);
     info.reconcile_stamp = info_sql.ColumnInt64(13);
+    info.visits = info_sql.ColumnInt(14);
 
     info.excluded = static_cast<ledger::PUBLISHER_EXCLUDE>(
         info_sql.ColumnInt(6));
@@ -579,7 +614,7 @@ bool PublisherInfoDatabase::GetActivityList(
     list->push_back(info);
   }
 
-  return list;
+  return true;
 }
 
 /**

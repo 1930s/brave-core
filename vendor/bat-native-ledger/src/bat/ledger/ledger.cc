@@ -132,7 +132,8 @@ ActivityInfoFilter::ActivityInfoFilter() :
     percent(0),
     min_duration(0),
     reconcile_stamp(0),
-    non_verified(true) {}
+    non_verified(true),
+    min_visits(0u) {}
 
 ActivityInfoFilter::ActivityInfoFilter(const ActivityInfoFilter& filter) :
     id(filter.id),
@@ -143,7 +144,8 @@ ActivityInfoFilter::ActivityInfoFilter(const ActivityInfoFilter& filter) :
     order_by(filter.order_by),
     min_duration(filter.min_duration),
     reconcile_stamp(filter.reconcile_stamp),
-    non_verified(filter.non_verified) {}
+    non_verified(filter.non_verified),
+    min_visits(filter.min_visits) {}
 
 ActivityInfoFilter::~ActivityInfoFilter() {}
 
@@ -184,6 +186,12 @@ bool ActivityInfoFilter::loadFromJson(const std::string& json) {
     for (const auto& i : d["order_by"].GetObject()) {
       order_by.push_back(std::make_pair(i.name.GetString(),
             i.value.GetBool()));
+    }
+
+    if (d.HasMember("min_visits") && d["min_visits"].IsUint()) {
+      min_visits = d["min_visits"].GetUint();
+    } else {
+      min_visits = 0u;
     }
   }
 
@@ -739,6 +747,45 @@ bool PendingContributionList::loadFromJson(const std::string& json) {
       PendingContribution contribution;
       contribution.loadFromJson(sb.GetString());
       list_.push_back(contribution);
+    }
+  }
+
+  return !error;
+}
+
+PublisherInfoListStruct::PublisherInfoListStruct () {}
+PublisherInfoListStruct::~PublisherInfoListStruct () {}
+PublisherInfoListStruct::PublisherInfoListStruct (
+    const ledger::PublisherInfoListStruct &properties) {
+  list = properties.list;
+}
+
+const std::string PublisherInfoListStruct::ToJson() const {
+  std::string json;
+  braveledger_bat_helper::saveToJsonString(*this, json);
+  return json;
+}
+
+bool PublisherInfoListStruct::loadFromJson(const std::string& json) {
+  rapidjson::Document d;
+  d.Parse(json.c_str());
+
+  // has parser errors or wrong types
+  bool error = d.HasParseError();
+
+  if (false == error) {
+    error = !(d.HasMember("list") && d["list"].IsArray());
+  }
+
+  if (false == error) {
+    for (const auto& g : d["list"].GetArray()) {
+      rapidjson::StringBuffer sb;
+      rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+      g.Accept(writer);
+
+      PublisherInfo contribution;
+      contribution.loadFromJson(sb.GetString());
+      list.push_back(contribution);
     }
   }
 

@@ -32,6 +32,14 @@ class SettingsPage extends React.Component<Props, {}> {
     return this.props.actions
   }
 
+  refreshActions () {
+    this.actions.getCurrentReport()
+    this.actions.getDonationTable()
+    this.actions.getContributeList()
+    this.actions.getPendingContributionsTotal()
+    this.actions.getReconcileStamp()
+  }
+
   componentDidMount () {
     if (this.props.rewardsData.firstLoad === null) {
       // First load ever
@@ -47,19 +55,43 @@ class SettingsPage extends React.Component<Props, {}> {
       this.actions.getWalletProperties()
     }, 60000)
 
-    this.actions.getCurrentReport()
-    this.actions.getDonationTable()
-    this.actions.getContributeList()
-    this.actions.getAdsData()
+    if (this.props.rewardsData.firstLoad === false) {
+      this.refreshActions()
+      this.actions.getAdsData()
+    }
     this.actions.checkImported()
-    this.actions.getReconcileStamp()
     this.actions.getGrant()
-    this.actions.getPendingContributionsTotal()
 
     // one time check (legacy fix)
     // more info here https://github.com/brave/brave-browser/issues/2172
     if (!this.props.rewardsData.ui.addressCheck) {
       this.actions.getAddresses()
+    }
+
+    // one time check (legacy fix)
+    if (!this.props.rewardsData.ui.paymentIdCheck) {
+      // https://github.com/brave/brave-browser/issues/3060
+      this.actions.getAddressesForPaymentId()
+      // https://github.com/brave/brave-browser/issues/3061
+      this.actions.getWalletPassphrase()
+    }
+  }
+
+  componentDidUpdate (prevProps: Props) {
+    if (
+      !prevProps.rewardsData.enabledMain &&
+      this.props.rewardsData.enabledMain &&
+      this.props.rewardsData.firstLoad === false
+    ) {
+      this.refreshActions()
+    }
+
+    if (
+      !prevProps.rewardsData.enabledContribute &&
+      this.props.rewardsData.enabledContribute
+    ) {
+      this.actions.getContributeList()
+      this.actions.getReconcileStamp()
     }
   }
 

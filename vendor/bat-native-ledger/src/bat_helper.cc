@@ -4,14 +4,8 @@
 
 #include "bat_helper.h"
 
-#include <sstream>
-#include <random>
-#include <utility>
 #include <iomanip>
-#include <ctime>
-#include <memory>
-#include <iostream>
-#include <string>
+#include <random>
 #include <regex>
 
 #include <openssl/base64.h>
@@ -20,11 +14,10 @@
 #include <openssl/sha.h>
 
 #include "bat/ledger/ledger.h"
+#include "logging.h"
 #include "rapidjson_bat_helper.h"
 #include "static_values.h"
 #include "tweetnacl.h"
-
-//#include "crypto/hkdf.h"
 
 namespace braveledger_bat_helper {
 
@@ -614,6 +607,7 @@ static bool ignore_ = false;
     allow_videos_ = state.allow_videos_;
     monthly_balances_ = state.monthly_balances_;
     recurring_donation_ = state.recurring_donation_;
+    migrate_score = state.migrate_score;
   }
 
   PUBLISHER_STATE_ST::~PUBLISHER_STATE_ST() {}
@@ -661,6 +655,7 @@ static bool ignore_ = false;
           monthly_balances_.insert(std::make_pair(itr->name.GetString(), r));
         }
       }
+
       for (const auto & i : d["recurring_donation"].GetArray()) {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -673,6 +668,12 @@ static bool ignore_ = false;
         if (itr != d1.MemberEnd()) {
           recurring_donation_.insert(std::make_pair(itr->name.GetString(), itr->value.GetDouble()));
         }
+      }
+
+      if (d.HasMember("migrate_score") && d["migrate_score"].IsBool()) {
+        migrate_score = d["migrate_score"].GetBool();
+      } else {
+        migrate_score = true;
       }
     }
 
@@ -718,7 +719,11 @@ static bool ignore_ = false;
       writer.Double(p.second);
       writer.EndObject();
     }
+
     writer.EndArray();
+
+    writer.String("migrate_score");
+    writer.Bool(data.migrate_score);
 
     writer.EndObject();
   }
@@ -891,6 +896,56 @@ static bool ignore_ = false;
     return !error;
   }
 
+  void saveToJson(JsonWriter & writer, const WALLET_PROPERTIES_ST& data) {
+    writer.StartObject();
+
+    writer.String("altcurrency");
+    writer.String(data.altcurrency_.c_str());
+
+    writer.String("probi_");
+    writer.String(data.probi_.c_str());
+
+    writer.String("balance");
+    writer.Double(data.balance_);
+
+    writer.String("fee_amount");
+    writer.Double(data.fee_amount_);
+
+    writer.String("rates");
+    writer.StartObject();
+    for (auto & p : data.rates_) {
+      writer.String(p.first.c_str());
+      writer.Double(p.second);
+    }
+    writer.EndObject();
+
+    writer.String("parameters_choices");
+    writer.StartArray();
+    for (auto & choice : data.parameters_choices_) {
+      writer.Double(choice);
+    }
+    writer.EndArray();
+
+    writer.String("parameters_range");
+    writer.StartArray();
+    for (auto & choice : data.parameters_range_) {
+      writer.Double(choice);
+    }
+    writer.EndArray();
+
+    writer.String("parameters_days");
+    writer.Int(data.parameters_days_);
+
+    writer.String("grants");
+    writer.StartArray();
+    for (auto & grant : data.grants_) {
+      saveToJson(writer, grant);
+    }
+    writer.EndArray();
+
+    writer.EndObject();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   GRANT::GRANT() : expiryTime(0) {}
 
@@ -937,6 +992,24 @@ static bool ignore_ = false;
     }
 
     return !error;
+  }
+
+  void saveToJson(JsonWriter & writer, const GRANT& data) {
+    writer.StartObject();
+
+    writer.String("altcurrency");
+    writer.String(data.altcurrency.c_str());
+
+    writer.String("probi");
+    writer.String(data.probi.c_str());
+
+    writer.String("expiryTime");
+    writer.Uint64(data.expiryTime);
+
+    writer.String("promotionId");
+    writer.String(data.promotionId.c_str());
+
+    writer.EndObject();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -1381,6 +1454,14 @@ static bool ignore_ = false;
           current_reconciles_[i.name.GetString()] = b;
         }
       }
+
+      if (d.HasMember("walletProperties") && d["walletProperties"].IsObject()) {
+        auto & i = d["walletProperties"];
+        rapidjson::StringBuffer sb;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+        i.Accept(writer);
+        walletProperties_.loadFromJson(sb.GetString());
+      }
     }
 
     return !error;
@@ -1471,6 +1552,9 @@ static bool ignore_ = false;
       saveToJson(writer, t.second);
     }
     writer.EndObject();
+
+    writer.String("walletProperties");
+    saveToJson(writer, data.walletProperties_);
 
     writer.EndObject();
   }
@@ -1945,6 +2029,33 @@ static bool ignore_ = false;
     return !hasError;
   }
 
+  bool getJSONAddresses(const std::string& json,
+                        std::map<std::string, std::string>& addresses) {
+    rapidjson::Document d;
+    d.Parse(json.c_str());
+
+    //has parser errors or wrong types
+    bool error = d.HasParseError();
+    if (false == error) {
+      error = !(d.HasMember("addresses") && d["addresses"].IsObject());
+    }
+
+    if (false == error) {
+      addresses.insert(
+          std::make_pair("BAT", d["addresses"]["BAT"].GetString()));
+      addresses.insert(
+          std::make_pair("BTC", d["addresses"]["BTC"].GetString()));
+      addresses.insert(
+          std::make_pair("CARD_ID", d["addresses"]["CARD_ID"].GetString()));
+      addresses.insert(
+          std::make_pair("ETH", d["addresses"]["ETH"].GetString()));
+      addresses.insert(
+          std::make_pair("LTC", d["addresses"]["LTC"].GetString()));
+    }
+
+    return !error;
+  }
+
   std::vector<uint8_t> generateSeed() {
     //std::ostringstream seedStr;
 
@@ -2239,7 +2350,6 @@ static bool ignore_ = false;
     size_t pos = query.find("data=");
     if (std::string::npos != pos && query.length() > 5) {
       std::string varValue = query.substr(5);
-      //DecodeURLChars(query.substr(5), varValue);
       std::vector<uint8_t> decoded;
       bool succeded = braveledger_bat_helper::getFromBase64(varValue, decoded);
       if (succeded) {
@@ -2655,6 +2765,9 @@ static bool ignore_ = false;
     writer.String("non_verified");
     writer.Bool(info.non_verified);
 
+    writer.String("min_visits");
+    writer.Uint(info.min_visits);
+
     writer.EndObject();
   }
 
@@ -2763,6 +2876,20 @@ static bool ignore_ = false;
     writer.StartArray();
     for (const auto& contribution : contributions.list_) {
       saveToJson(writer, contribution);
+    }
+    writer.EndArray();
+
+    writer.EndObject();
+  }
+
+  void saveToJson(JsonWriter& writer,
+                  const ledger::PublisherInfoListStruct& publishers) {
+    writer.StartObject();
+
+    writer.String("list");
+    writer.StartArray();
+    for (const auto& publisher : publishers.list) {
+      saveToJson(writer, publisher);
     }
     writer.EndArray();
 

@@ -1,8 +1,14 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* Copyright 2016 The Brave Authors. All rights reserved.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "brave/components/brave_sync/brave_sync_service_impl.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/task/post_task.h"
 #include "brave/browser/ui/webui/sync/sync_ui.h"
@@ -40,7 +46,7 @@ RecordsListPtr CreateDeviceCreationRecordExtension(
   record->action = action;
   record->deviceId = deviceId;
   record->objectId = objectId;
-  record->objectData = jslib_const::SyncObjectData_DEVICE; // "device"
+  record->objectData = jslib_const::SyncObjectData_DEVICE;  // "device"
 
   std::unique_ptr<jslib::Device> device = std::make_unique<jslib::Device>();
   device->name = deviceName;
@@ -62,7 +68,7 @@ SyncRecordPtr PrepareResolvedDevice(
       brave_sync::jslib::SyncRecord::Action::A_INVALID);
   record->deviceId = device->device_id_;
   record->objectId = device->object_id_;
-  record->objectData = jslib_const::SyncObjectData_DEVICE; // "device"
+  record->objectData = jslib_const::SyncObjectData_DEVICE;  // "device"
 
   std::unique_ptr<jslib::Device> device_record =
       std::make_unique<jslib::Device>();
@@ -228,11 +234,12 @@ void BraveSyncServiceImpl::OnResetSync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto sync_devices = sync_prefs_->GetSyncDevices();
-  // If there is only one or no devices left, we won't get back resolved sync
-  // record back.
-  if (sync_devices->size() <= 1)
+
+  if (sync_devices->size() == 0) {
+    // Fail safe option
+    VLOG(2) << "[Sync] " << __func__ << " unexpected zero device size";
     ResetSyncInternal();
-  else {
+  } else {
     // We have to send delete record and wait for library deleted response then
     // we can reset it by ResetInternal()
     const std::string device_id = sync_prefs_->GetThisDeviceId();
@@ -290,9 +297,7 @@ void BraveSyncServiceImpl::BackgroundSyncStarted(bool startup) {
   if (startup)
     bookmark_change_processor_->Start();
 
-  const bool waiting_for_second_device =
-                            !sync_prefs_->GetSyncDevices()->has_second_device();
-  StartLoop(waiting_for_second_device);
+  StartLoop();
 }
 
 void BraveSyncServiceImpl::BackgroundSyncStopped(bool shutdown) {
@@ -367,12 +372,20 @@ void BraveSyncServiceImpl::OnSaveInitData(const Uint8Array& seed,
 
   sync_words_.clear();
   DCHECK(!seed_str.empty());
-  if (prev_seed_str == seed_str) { // reconnecitng to previous sync chain
+
+  if (prev_seed_str == seed_str) {  // reconnecting to previous sync chain
     sync_prefs_->SetPrevSeed(std::string());
-  } else if (!prev_seed_str.empty()) { // connect/create to new sync chain
+  } else if (!prev_seed_str.empty()) {  // connect/create to new sync chain
     bookmark_change_processor_->Reset(true);
     sync_prefs_->SetPrevSeed(std::string());
-  } // else {} no previous sync chain
+  } else {
+    // This is not required, because when there is no previous seed, bookmarks
+    // should not have a metadata. However, this is done by intention, to be
+    // a remedy for cases when sync had been reset and prev_seed_str had been
+    // cleared when it shouldn't (brave-browser#3188).
+    bookmark_change_processor_->Reset(true);
+  }
+
   sync_prefs_->SetSeed(seed_str);
   sync_prefs_->SetThisDeviceId(device_id_str);
 
@@ -443,7 +456,6 @@ void BraveSyncServiceImpl::OnResolvedSyncRecords(
   } else if (category_name == brave_sync::jslib_const::kHistorySites) {
     NOTIMPLEMENTED();
   }
-
 }
 
 std::unique_ptr<SyncRecordAndExistingList>
@@ -468,10 +480,9 @@ BraveSyncServiceImpl::PrepareResolvedPreferences(const RecordsList& records) {
 void BraveSyncServiceImpl::OnResolvedPreferences(const RecordsList& records) {
   const std::string this_device_id = sync_prefs_->GetThisDeviceId();
   bool this_device_deleted = false;
-  bool at_least_one_deleted = false;
+  bool contains_only_one_device = false;
 
   auto sync_devices = sync_prefs_->GetSyncDevices();
-  const bool waiting_for_second_device = !sync_devices->has_second_device();
   for (const auto &record : records) {
     DCHECK(record->has_device() || record->has_sitesetting());
     if (record->has_device()) {
@@ -487,19 +498,21 @@ void BraveSyncServiceImpl::OnResolvedPreferences(const RecordsList& records) {
         (record->deviceId == this_device_id &&
           record->action == jslib::SyncRecord::Action::A_DELETE &&
           actually_merged);
-      at_least_one_deleted = at_least_one_deleted ||
-          (record->action == jslib::SyncRecord::Action::A_DELETE &&
-          actually_merged);
+      contains_only_one_device = sync_devices->size() < 2 &&
+        record->action == jslib::SyncRecord::Action::A_DELETE &&
+          actually_merged;
     }
-  } // for each device
+  }  // for each device
 
   sync_prefs_->SetSyncDevices(*sync_devices);
-  if (this_device_deleted ||
-                 (at_least_one_deleted && !sync_devices->has_second_device())) {
+
+  if (this_device_deleted) {
     ResetSyncInternal();
-  } else if (waiting_for_second_device && sync_devices->has_second_device()) {
-    // Restart loop with 30 sec interval
-    StartLoop(false);
+  } else if (contains_only_one_device) {
+    // We see amount of devices had been decreased to 1 and it is not this
+    // device had been deleted. So call OnResetSync which will send DELETE
+    // record for this device
+    OnResetSync();
   }
 }
 
@@ -563,15 +576,17 @@ void BraveSyncServiceImpl::FetchSyncRecords(const bool bookmarks,
   }
 
   std::vector<std::string> category_names;
-  using namespace brave_sync::jslib_const;
+  using brave_sync::jslib_const::kHistorySites;
+  using brave_sync::jslib_const::kBookmarks;
+  using brave_sync::jslib_const::kPreferences;
   if (history) {
-    category_names.push_back(kHistorySites); // "HISTORY_SITES";
+    category_names.push_back(kHistorySites);  // "HISTORY_SITES";
   }
   if (bookmarks) {
-    category_names.push_back(kBookmarks);//"BOOKMARKS";
+    category_names.push_back(kBookmarks);    // "BOOKMARKS";
   }
   if (preferences) {
-    category_names.push_back(kPreferences);//"PREFERENCES";
+    category_names.push_back(kPreferences);  // "PREFERENCES";
   }
 
   DCHECK(sync_client_);
@@ -615,14 +630,10 @@ void BraveSyncServiceImpl::SendDeviceSyncRecord(
 }
 
 static const int64_t kCheckUpdatesIntervalSec = 60;
-static const int64_t kCheckInitialUpdatesIntervalSec = 1;
 
-void BraveSyncServiceImpl::StartLoop(const bool use_initial_update_interval) {
+void BraveSyncServiceImpl::StartLoop() {
   timer_->Start(FROM_HERE,
-                  base::TimeDelta::FromSeconds(
-                    use_initial_update_interval ?
-                        kCheckInitialUpdatesIntervalSec :
-                        kCheckUpdatesIntervalSec),
+                  base::TimeDelta::FromSeconds(kCheckUpdatesIntervalSec),
                   this,
                   &BraveSyncServiceImpl::LoopProc);
 }
@@ -647,10 +658,6 @@ void BraveSyncServiceImpl::LoopProcThreadAligned() {
   }
 
   RequestSyncData();
-}
-
-base::TimeDelta BraveSyncServiceImpl::GetLoopDelay() const {
-  return timer_->GetCurrentDelay();
 }
 
 void BraveSyncServiceImpl::NotifyLogMessage(const std::string& message) {
@@ -707,4 +714,4 @@ void BraveSyncServiceImpl::SetDeviceName(const std::string& name) {
   }
 }
 
-} // namespace brave_sync
+}  // namespace brave_sync

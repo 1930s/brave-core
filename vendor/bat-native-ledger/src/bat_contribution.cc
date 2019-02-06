@@ -173,7 +173,7 @@ void BatContribution::ReconcilePublisherList(
 
   if (category == ledger::REWARDS_CATEGORY::AUTO_CONTRIBUTE) {
     ledger::PublisherInfoList normalized_list;
-    ledger_->NormalizeContributeWinners(&normalized_list, false, list, 0);
+    ledger_->NormalizeContributeWinners(&normalized_list, list, 0);
     std::sort(normalized_list.begin(), normalized_list.end());
     verified_list = GetVerifiedListAuto(viewing_id, normalized_list, budget);
   } else {
@@ -238,7 +238,8 @@ void BatContribution::StartAutoContribute() {
       ledger::EXCLUDE_FILTER::FILTER_ALL_EXCEPT_EXCLUDED,
       true,
       current_reconcile_stamp,
-      ledger_->GetPublisherAllowNonVerified());
+      ledger_->GetPublisherAllowNonVerified(),
+      ledger_->GetPublisherMinVisits());
   ledger_->GetActivityInfoList(
       0,
       0,
@@ -1524,6 +1525,15 @@ void BatContribution::AddRetry(
 
   if (reconcile.viewingId_.empty()) {
     reconcile = ledger_->GetReconcileById(viewing_id);
+  }
+
+  // Don't retry one-time tip if in phase 1
+  if (GetRetryPhase(step) == 1 &&
+      reconcile.category_ == ledger::REWARDS_CATEGORY::DIRECT_DONATION) {
+    OnReconcileComplete(ledger::Result::TIP_ERROR,
+                        viewing_id,
+                        reconcile.category_);
+    return;
   }
 
   uint64_t start_timer_in = GetRetryTimer(step, viewing_id, reconcile);

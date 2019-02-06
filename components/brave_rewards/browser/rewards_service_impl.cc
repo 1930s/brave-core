@@ -87,20 +87,32 @@ class LogStreamImpl : public ledger::LogStream {
   LogStreamImpl(const char* file,
                 int line,
                 const ledger::LogLevel log_level) {
+    logging::LogSeverity severity;
+
     switch(log_level) {
       case ledger::LogLevel::LOG_INFO:
-        log_message_ = std::make_unique<logging::LogMessage>(file, line, logging::LOG_INFO);
+        severity = logging::LOG_INFO;
         break;
       case ledger::LogLevel::LOG_WARNING:
-        log_message_ = std::make_unique<logging::LogMessage>(file, line, logging::LOG_WARNING);
+        severity = logging::LOG_WARNING;
         break;
       case ledger::LogLevel::LOG_ERROR:
-        log_message_ = std::make_unique<logging::LogMessage>(file, line, logging::LOG_ERROR);
+        severity = logging::LOG_ERROR;
         break;
       default:
-        log_message_ = std::make_unique<logging::LogMessage>(file, line, logging::LOG_VERBOSE);
+        severity = logging::LOG_VERBOSE;
         break;
     }
+
+    log_message_ = std::make_unique<logging::LogMessage>(file, line, severity);
+  }
+
+  LogStreamImpl(const char* file,
+                int line,
+                int log_level) {
+    // VLOG has negative log level
+    log_message_ =
+        std::make_unique<logging::LogMessage>(file, line, -log_level);
   }
 
   std::ostream& stream() override {
@@ -425,6 +437,7 @@ void RewardsServiceImpl::GetContentSiteList(
     uint64_t min_visit_time,
     uint64_t reconcile_stamp,
     bool allow_non_verified,
+    uint32_t min_visits,
     const GetContentSiteListCallback& callback) {
   ledger::ActivityInfoFilter filter;
   filter.month = ledger::ACTIVITY_MONTH::ANY;
@@ -436,6 +449,7 @@ void RewardsServiceImpl::GetContentSiteList(
     ledger::EXCLUDE_FILTER::FILTER_ALL_EXCEPT_EXCLUDED;
   filter.percent = 1;
   filter.non_verified = allow_non_verified;
+  filter.min_visits = min_visits;
 
   GetActivityInfoList(start, limit,
       filter,
@@ -952,10 +966,8 @@ void RewardsServiceImpl::OnPublisherInfoSaved(
     bool success) {
   if (Connected()) {
     callback(success ? ledger::Result::LEDGER_OK
-        : ledger::Result::LEDGER_ERROR, std::move(info));
+                     : ledger::Result::LEDGER_ERROR, std::move(info));
   }
-
-  TriggerOnContentSiteUpdated();
 }
 
 void RewardsServiceImpl::SaveActivityInfo(
@@ -977,10 +989,10 @@ void RewardsServiceImpl::OnActivityInfoSaved(
     ledger::PublisherInfoCallback callback,
     std::unique_ptr<ledger::PublisherInfo> info,
     bool success) {
-  callback(success ? ledger::Result::LEDGER_OK
-                   : ledger::Result::LEDGER_ERROR, std::move(info));
-
-  TriggerOnContentSiteUpdated();
+  if (Connected()) {
+    callback(success ? ledger::Result::LEDGER_OK
+                     : ledger::Result::LEDGER_ERROR, std::move(info));
+  }
 }
 
 void RewardsServiceImpl::LoadActivityInfo(
@@ -1473,11 +1485,6 @@ void RewardsServiceImpl::SetAutoContribute(bool enabled) const {
   bat_ledger_->SetAutoContribute(enabled);
 }
 
-void RewardsServiceImpl::TriggerOnContentSiteUpdated() {
-  for (auto& observer : observers_)
-    observer.OnContentSiteUpdated(this);
-}
-
 void RewardsServiceImpl::TriggerOnRewardsMainEnabled(bool rewards_main_enabled) {
   for (auto& observer : observers_)
     observer.OnRewardsMainEnabled(this, rewards_main_enabled);
@@ -1645,7 +1652,7 @@ void RewardsServiceImpl::GetPublisherActivityFromUrl(
 
   if (baseDomain == "") {
     std::unique_ptr<ledger::PublisherInfo> info;
-    OnPublisherActivity(ledger::Result::NOT_FOUND, std::move(info), windowId);
+    OnPanelPublisherInfo(ledger::Result::NOT_FOUND, std::move(info), windowId);
     return;
   }
 
@@ -1670,14 +1677,20 @@ void RewardsServiceImpl::OnExcludedSitesChanged(const std::string& publisher_id)
     observer.OnExcludedSitesChanged(this, publisher_id);
 }
 
-void RewardsServiceImpl::OnPublisherActivity(ledger::Result result,
-                                             std::unique_ptr<ledger::PublisherInfo> info,
-                                             uint64_t windowId) {
+void RewardsServiceImpl::OnPanelPublisherInfo(
+    ledger::Result result,
+    std::unique_ptr<ledger::PublisherInfo> info,
+    uint64_t windowId) {
   if (result != ledger::Result::LEDGER_OK &&
       result != ledger::Result::NOT_FOUND) {
     return;
   }
-  TriggerOnGetPublisherActivityFromUrl(result, std::move(info), windowId);
+
+  for (auto& observer : private_observers_)
+    observer.OnPanelPublisherInfo(this,
+                                  result,
+                                  std::move(info),
+                                  windowId);
 }
 
 void RewardsServiceImpl::GetContributionAmount(
@@ -2050,15 +2063,6 @@ void RewardsServiceImpl::TriggerOnGetCurrentBalanceReport(
   }
 }
 
-void RewardsServiceImpl::TriggerOnGetPublisherActivityFromUrl(
-    ledger::Result result,
-    std::unique_ptr<ledger::PublisherInfo> info,
-    uint64_t windowId) {
-  for (auto& observer : private_observers_)
-    observer.OnGetPublisherActivityFromUrl(this, result, std::move(info),
-                                           windowId);
-}
-
 void RewardsServiceImpl::SetContributionAutoInclude(
     const std::string& publisher_key, bool excluded, uint64_t windowId) {
   if (!Connected())
@@ -2138,6 +2142,13 @@ std::unique_ptr<ledger::LogStream> RewardsServiceImpl::Log(
     const char* file,
     int line,
     const ledger::LogLevel log_level) const {
+  return std::make_unique<LogStreamImpl>(file, line, log_level);
+}
+
+std::unique_ptr<ledger::LogStream> RewardsServiceImpl::VerboseLog(
+                     const char* file,
+                     int line,
+                     int log_level) const {
   return std::make_unique<LogStreamImpl>(file, line, log_level);
 }
 
@@ -2341,7 +2352,8 @@ bool RestorePublisherOnFileTaskRunner(PublisherInfoDatabase* backend) {
   return backend->RestorePublishers();
 }
 
-void RewardsServiceImpl::OnRestorePublishers(ledger::OnRestoreCallback callback) {
+void RewardsServiceImpl::OnRestorePublishers(
+    ledger::OnRestoreCallback callback) {
   base::PostTaskAndReplyWithResult(
       file_task_runner_.get(),
       FROM_HERE,
@@ -2356,10 +2368,81 @@ void RewardsServiceImpl::OnRestorePublishersInternal(
     ledger::OnRestoreCallback callback,
     bool result) {
   callback(result);
+}
 
-  if (result) {
-    TriggerOnContentSiteUpdated();
+std::unique_ptr<ledger::PublisherInfoList>
+SaveNormalizedPublisherListOnFileTaskRunner(PublisherInfoDatabase* backend,
+                                            const ledger::PublisherInfoList& list) {
+  if (!backend) {
+    return nullptr;
   }
+
+  bool success = backend->InsertOrUpdateActivityInfos(list);
+
+  if (!success) {
+    return nullptr;
+  }
+
+  std::unique_ptr<ledger::PublisherInfoList> new_list(
+      new ledger::PublisherInfoList);
+
+  for (auto& publisher : list) {
+    new_list->push_back(publisher);
+  }
+
+  return new_list;
+}
+
+void RewardsServiceImpl::SaveNormalizedPublisherList(
+      const ledger::PublisherInfoListStruct& list) {
+
+  if (list.list.size() == 0) {
+    std::unique_ptr<ledger::PublisherInfoList> empty_list(
+        new ledger::PublisherInfoList);
+    OnPublisherListNormalizedSaved(std::move(empty_list));
+    return;
+  }
+
+  base::PostTaskAndReplyWithResult(
+    file_task_runner_.get(),
+    FROM_HERE,
+    base::Bind(&SaveNormalizedPublisherListOnFileTaskRunner,
+               publisher_info_backend_.get(),
+               list.list),
+    base::Bind(&RewardsServiceImpl::OnPublisherListNormalizedSaved,
+               AsWeakPtr()));
+}
+
+void RewardsServiceImpl::OnPublisherListNormalizedSaved(
+    std::unique_ptr<ledger::PublisherInfoList> list) {
+  if (!list) {
+    LOG(ERROR) << "Problem saving normalized publishers "
+                  "in SaveNormalizedPublisherList";
+    return;
+  }
+
+  ContentSiteList site_list;
+  for (auto& publisher : *list) {
+    site_list.push_back(PublisherInfoToContentSite(publisher));
+  }
+
+  sort(site_list.begin(), site_list.end());
+
+  for (auto& observer : observers_) {
+    observer.OnPublisherListNormalized(this, site_list);
+  }
+}
+
+void RewardsServiceImpl::GetAddressesForPaymentId(
+    const GetAddressesCallback& callback) {
+  if (!Connected()) {
+    return;
+  }
+
+  bat_ledger_->GetAddressesForPaymentId(
+      base::BindOnce(&RewardsServiceImpl::OnGetAddresses,
+                     AsWeakPtr(),
+                     callback));
 }
 
 }  // namespace brave_rewards

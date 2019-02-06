@@ -82,7 +82,11 @@ export const rewardsPanelReducer = (state: RewardsExtension.State | undefined, a
         const id = getWindowId(tab.windowId)
         const publishers: Record<string, RewardsExtension.Publisher> = state.publishers
         const publisher = publishers[id]
-        chrome.braveRewards.getPublisherData(tab.windowId, tab.url, tab.favIconUrl || '', payload.publisherBlob || '')
+
+        if ((payload.onlyDiff && publisher && publisher.tabUrl !== tab.url) || !payload.onlyDiff) {
+          chrome.braveRewards.getPublisherData(tab.windowId, tab.url, tab.favIconUrl || '', payload.publisherBlob || '')
+        }
+
         if (!publisher || (publisher && publisher.tabUrl !== tab.url)) {
           if (publisher) {
             delete publishers[id]
@@ -240,6 +244,14 @@ export const rewardsPanelReducer = (state: RewardsExtension.State | undefined, a
           break
         }
         state.enabledMain = payload.enabledMain
+        break
+      }
+    case types.ON_ENABLED_AC:
+      {
+        if (payload.enabled == null) {
+          break
+        }
+        state.enabledAC = payload.enabled
         break
       }
   }

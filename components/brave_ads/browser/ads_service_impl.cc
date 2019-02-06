@@ -363,6 +363,12 @@ void AdsServiceImpl::Start() {
   if (command_line.HasSwitch(switches::kTesting)) {
     is_testing = true;
   }
+  if (command_line.HasSwitch(switches::kLocale)) {
+    std::string locale = command_line.GetSwitchValueASCII(switches::kLocale);
+    if (!locale.empty()) {
+      command_line_switch_ads_locale_ = locale;
+    }
+  }
 
   bat_ads_service_->SetProduction(is_production, base::NullCallback());
   bat_ads_service_->SetDebug(is_debug, base::NullCallback());
@@ -788,7 +794,10 @@ void AdsServiceImpl::OpenSettings(Profile* profile,
 #if defined(OS_ANDROID)
   NavigateParams nav_params(profile, url, ui::PAGE_TRANSITION_LINK);
 #else
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  if (!browser)
+    browser = new Browser(Browser::CreateParams(profile, true));
+
   NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_LINK);
 #endif
   nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -838,6 +847,10 @@ const std::vector<std::string> AdsServiceImpl::GetLocales() const {
 }
 
 const std::string AdsServiceImpl::GetAdsLocale() const {
+  if (!command_line_switch_ads_locale_.empty()) {
+    return command_line_switch_ads_locale_;
+  }
+
   return g_browser_process->GetApplicationLocale();
 }
 

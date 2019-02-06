@@ -10,7 +10,6 @@
 #include <map>
 #include <functional>
 
-#include "bat_helper_platform.h"
 #include "static_values.h"
 
 namespace braveledger_bat_helper {
@@ -226,6 +225,7 @@ namespace braveledger_bat_helper {
     bool allow_videos_ = true;
     std::map<std::string, REPORT_BALANCE_ST> monthly_balances_;
     std::map<std::string, double> recurring_donation_;
+    bool migrate_score = false;
   };
 
   struct PUBLISHER_ST {
@@ -449,6 +449,9 @@ namespace braveledger_bat_helper {
   bool getJSONResponse(const std::string& json, unsigned int& statusCode, std::string& error);
 
   bool getJSONServerList(const std::string& json, std::map<std::string, SERVER_LIST>& list);
+
+  bool getJSONAddresses(const std::string& json,
+                        std::map<std::string, std::string>& addresses);
 
   std::vector<uint8_t> generateSeed();
 

@@ -73,6 +73,7 @@ class RewardsService : public KeyedService {
       uint64_t min_visit_time,
       uint64_t reconcile_stamp,
       bool allow_non_verified,
+      uint32_t min_visits,
       const GetContentSiteListCallback& callback) = 0;
   virtual void FetchGrant(const std::string& lang, const std::string& paymentId) = 0;
   virtual void GetGrantCaptcha() = 0;
@@ -154,6 +155,9 @@ class RewardsService : public KeyedService {
     const GetPendingContributionsTotalCallback& callback) = 0;
   virtual void GetRewardsMainEnabled(
     const GetRewardsMainEnabledCallback& callback) const = 0;
+
+  virtual void GetAddressesForPaymentId(
+      const GetAddressesCallback& callback) = 0;
 
   void AddObserver(RewardsServiceObserver* observer);
   void RemoveObserver(RewardsServiceObserver* observer);
