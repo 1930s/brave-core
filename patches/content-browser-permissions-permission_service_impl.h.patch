@@ -1,0 +1,14 @@
+diff --git a/content/browser/permissions/permission_service_impl.h b/content/browser/permissions/permission_service_impl.h
+index 85359a821fb4641a1bc904e1f3c0adcb54a3ed40..27f0fd0ed9f6edb5703232d19e6bb2752e75c6b6 100644
+--- a/content/browser/permissions/permission_service_impl.h
++++ b/content/browser/permissions/permission_service_impl.h
+@@ -44,6 +44,9 @@ class CONTENT_EXPORT PermissionServiceImpl
+   // blink::mojom::PermissionService.
+   void HasPermission(blink::mojom::PermissionDescriptorPtr permission,
+                      PermissionStatusCallback callback) override;
++  bool HasPermission(blink::mojom::PermissionDescriptorPtr permission,
++                     blink::mojom::PermissionStatus* out_status) override;
++
+   void RequestPermission(blink::mojom::PermissionDescriptorPtr permission,
+                          bool user_gesture,
+                          PermissionStatusCallback callback) override;

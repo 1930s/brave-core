@@ -20,14 +20,15 @@ AutoplayPermissionContext::AutoplayPermissionContext(Profile* profile)
 
 AutoplayPermissionContext::~AutoplayPermissionContext() = default;
 
-PermissionResult AutoplayPermissionContext::GetPermissionStatus(
+ContentSetting AutoplayPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-    // check requesting origin against the autoplay whitelist service
-    if (g_brave_browser_process->autoplay_whitelist_service()->ShouldAllowAutoplay(requesting_origin))
-        return PermissionResult(CONTENT_SETTING_ALLOW, PermissionStatusSource::UNSPECIFIED);
-    return PermissionResult(CONTENT_SETTING_ASK, PermissionStatusSource::UNSPECIFIED);
+    if (g_brave_browser_process->autoplay_whitelist_service()
+        ->ShouldAllowAutoplay(requesting_origin))
+      return CONTENT_SETTING_ALLOW;
+    return PermissionContextBase::GetPermissionStatusInternal(
+        render_frame_host, requesting_origin, embedding_origin);
 }
 
 void AutoplayPermissionContext::UpdateTabContext(

@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/public/platform/modules/permissions/permission.mojom b/third_party/blink/public/platform/modules/permissions/permission.mojom
-index 0ccecc19b9c96a9b6afa09c387323646f8fe3b4d..2b66b22ddabc9e3dc5dcc2b7a2d584c9501f4201 100644
+index 0ccecc19b9c96a9b6afa09c387323646f8fe3b4d..06c44e2dac804d7880713d9554413f7ce3a88c70 100644
 --- a/third_party/blink/public/platform/modules/permissions/permission.mojom
 +++ b/third_party/blink/public/platform/modules/permissions/permission.mojom
 @@ -21,6 +21,7 @@ enum PermissionName {
@@ -10,3 +10,11 @@ index 0ccecc19b9c96a9b6afa09c387323646f8fe3b4d..2b66b22ddabc9e3dc5dcc2b7a2d584c9
  };
  
  struct MidiPermissionDescriptor {
+@@ -53,6 +54,7 @@ interface PermissionObserver {
+ // methods to check, request, and revoke permissions. It also allows a client to
+ // start listening to permission changes.
+ interface PermissionService {
++  [Sync]
+   HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+   RequestPermission(PermissionDescriptor permission, bool user_gesture)
+       => (PermissionStatus status);

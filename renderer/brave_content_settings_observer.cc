@@ -249,16 +249,28 @@ bool BraveContentSettingsObserver::AllowAutoplay(bool default_value) {
     ->GetInterface(mojo::MakeRequest(&permission_service));
 
   if (permission_service.get()) {
-    auto has_permission_descriptor = blink::mojom::blink::PermissionDescriptor::New();
-    has_permission_descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
+    // Check (synchronously) whether we already have permission to autoplay.
+    // This may call the autoplay whitelist service in the UI thread, which
+    // we need to wait for.
+    auto has_permission_descriptor =
+        blink::mojom::blink::PermissionDescriptor::New();
+    has_permission_descriptor->name =
+        blink::mojom::blink::PermissionName::AUTOPLAY;
     blink::mojom::blink::PermissionStatus status;
-    if (permission_service->HasPermission(std::move(has_permission_descriptor), &status)) {
+    if (permission_service->HasPermission(
+            std::move(has_permission_descriptor), &status)) {
       allow = status == blink::mojom::blink::PermissionStatus::GRANTED;
       if (!allow) {
-        auto request_permission_descriptor = blink::mojom::blink::PermissionDescriptor::New();
-        request_permission_descriptor->name = blink::mojom::blink::PermissionName::AUTOPLAY;
-        permission_service->RequestPermission(std::move(request_permission_descriptor), true,
-                                              base::DoNothing());
+        // Request permission (asynchronously) but exit this function without
+        // allowing autoplay. Depending on settings and previous user choices,
+        // this may display visible permissions UI, or an "autoplay blocked"
+        // message, or nothing. In any case, we can't wait for it now.
+        auto request_permission_descriptor =
+            blink::mojom::blink::PermissionDescriptor::New();
+        request_permission_descriptor->name =
+            blink::mojom::blink::PermissionName::AUTOPLAY;
+        permission_service->RequestPermission(
+            std::move(request_permission_descriptor), true, base::DoNothing());
       }
     }
   }
