@@ -1,25 +1,28 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 
-// Rewrite original function name (see header file)
-#define GetOmniboxColor GetOmniboxColor_ChromiumImpl
-#define OmniboxTint OmniboxTint_Chromium
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
+
 #include "../../../chrome/browser/ui/omnibox/omnibox_theme.cc"
-#undef GetOmniboxColor
-#undef OmniboxTint
 
 namespace {
 
-OmniboxTint_Chromium BraveTintToChromiumTint(OmniboxTint brave_tint) {
+OmniboxTint BraveTintToChromiumTint(OmniboxTint brave_tint) {
   switch (brave_tint) {
     case OmniboxTint::PRIVATE:
     case OmniboxTint::DARK:
-      return OmniboxTint_Chromium::DARK;
+      return OmniboxTint::DARK;
     case OmniboxTint::LIGHT:
-      return OmniboxTint_Chromium::LIGHT;
+      return OmniboxTint::LIGHT;
     case OmniboxTint::NATIVE:
-      return OmniboxTint_Chromium::NATIVE;
+      return OmniboxTint::NATIVE;
     default:
-      return OmniboxTint_Chromium::LIGHT;
+      return OmniboxTint::LIGHT;
   }
 }
 
@@ -42,7 +45,7 @@ const SkColor kPrivateLocationBarBackground = SkColorSetRGB(0x1b, 0x0e, 0x2c);
 }
 
 // Overriden version
-SkColor GetOmniboxColor(OmniboxPart part,
+SkColor GetOmniboxColor_ChromiumImpl(OmniboxPart part,
                         OmniboxTint tint,
                         OmniboxPartState state) {
   // Note: OmniboxTint::NATIVE is no longer possible
@@ -88,6 +91,6 @@ SkColor GetOmniboxColor(OmniboxPart part,
   }
 
   // All other values, call original function
-  OmniboxTint_Chromium translate_value = BraveTintToChromiumTint(tint);
+  OmniboxTint translate_value = BraveTintToChromiumTint(tint);
   return GetOmniboxColor_ChromiumImpl(part, translate_value, state);
 }
