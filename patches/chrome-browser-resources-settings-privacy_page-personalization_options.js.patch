@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/resources/settings/privacy_page/personalization_options.js b/chrome/browser/resources/settings/privacy_page/personalization_options.js
-index fcdf4ec11eeeec07b45807b7eab1c2e9faaaa1c5..7f411c3f02c327d529e6ead60b6dc630f397ef04 100644
+index c6ffda162563790265c37d256f2a7217e77cb24b..699cfd9f5b0e4e8d9dc543852bfba91fb84f6e7e 100644
 --- a/chrome/browser/resources/settings/privacy_page/personalization_options.js
 +++ b/chrome/browser/resources/settings/privacy_page/personalization_options.js
-@@ -55,7 +55,7 @@ Polymer({
+@@ -33,7 +33,7 @@ Polymer({
      /** @type {settings.SyncStatus} */
      syncStatus: Object,
  
@@ -11,7 +11,7 @@ index fcdf4ec11eeeec07b45807b7eab1c2e9faaaa1c5..7f411c3f02c327d529e6ead60b6dc630
      // TODO(dbeam): make a virtual.* pref namespace and set/get this normally
      // (but handled differently in C++).
      /** @private {chrome.settingsPrivate.PrefObject} */
-@@ -77,14 +77,14 @@ Polymer({
+@@ -55,14 +55,14 @@ Polymer({
    ready: function() {
      this.browserProxy_ = settings.PrivacyPageBrowserProxyImpl.getInstance();
  
