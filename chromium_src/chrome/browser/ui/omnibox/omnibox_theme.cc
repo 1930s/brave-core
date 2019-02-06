@@ -45,7 +45,7 @@ const SkColor kPrivateLocationBarBackground = SkColorSetRGB(0x1b, 0x0e, 0x2c);
 }
 
 // Overriden version
-SkColor GetOmniboxColor(OmniboxPart part,
+SkColor GetOmniboxColor_ChromiumImpl(OmniboxPart part,
                         OmniboxTint tint,
                         OmniboxPartState state) {
   // Note: OmniboxTint::NATIVE is no longer possible
