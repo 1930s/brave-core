@@ -30,43 +30,6 @@ namespace brave_shields {
 AutoplayWhitelistService::AutoplayWhitelistService()
     : autoplay_whitelist_client_(new AutoplayWhitelistParser()),
       weak_factory_(this) {
-    // TODO(mpilgrim) begin temporary debug code
-    autoplay_whitelist_client_.reset(new AutoplayWhitelistParser());
-    LOG(ERROR) << "entering AutoplayWhitelistService\n";
-    std::string kDebugWhitelist[] = {
-        "example.com",
-        "youtube.com",
-        "khanacademy.org",
-        "twitch.tv",
-        "vimeo.com",
-        "udemy.com",
-        "duolingo.com",
-        "giphy.com",
-        "imgur.com",
-        "netflix.com",
-        "hulu.com",
-        "primevideo.com",
-        "dailymotion.com",
-        "tv.com",
-        "viewster.com",
-        "metacafe.com",
-        "d.tube",
-        "spotify.com",
-        "lynda.com",
-        "soundcloud.com",
-        "pandora.com",
-        "periscope.tv",
-        "pscp.tv",
-        "hangouts.google.com",
-        "meet.google.com",
-    };
-    for (const auto& host : kDebugWhitelist) {
-        autoplay_whitelist_client_->addHost(host.c_str());
-    }
-    // TODO(mpilgrim) end temporary debug code
-    // TODO(mpilgrim) remove above code when we're ready to actually read from
-    // the DAT file
-
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

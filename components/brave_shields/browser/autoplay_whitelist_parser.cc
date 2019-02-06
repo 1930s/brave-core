@@ -5,8 +5,6 @@
 #include "brave/components/brave_shields/browser/autoplay_whitelist_parser.h"
 #include "brave/vendor/hashset-cpp/hash_set.h"
 
-#include "base/logging.h"
-
 namespace brave_shields {
 
 AutoplayWhitelistParser::AutoplayWhitelistParser() {
@@ -19,7 +17,6 @@ AutoplayWhitelistParser::~AutoplayWhitelistParser() {
 void AutoplayWhitelistParser::addHost(const char *inputHost) {
   if (nullptr == inputHost)
     return;
-  LOG(ERROR) << inputHost;
   ST_AUTOPLAY_WHITELIST_DATA hostData;
   hostData.sHost = new char[strlen(inputHost) + 1];
   strcpy(hostData.sHost, inputHost);
@@ -29,7 +26,6 @@ void AutoplayWhitelistParser::addHost(const char *inputHost) {
 }
 
 bool AutoplayWhitelistParser::matchesHost(const char *inputHost) {
-  LOG(ERROR) << inputHost;
   bool exist = exists(inputHost);
   if (!exist) {
     unsigned int len = (unsigned int)strlen(inputHost);
@@ -72,7 +68,6 @@ bool AutoplayWhitelistParser::exists(const char *partialHost) {
   if (nullptr == hostData.sHost)
     return false;
   strcpy(hostData.sHost, partialHost);
-  LOG(ERROR) << partialHost;
   return mHosts->Exists(hostData);
 }
 
