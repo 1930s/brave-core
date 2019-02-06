@@ -29,7 +29,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/renderer/searchbox/search_bouncer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -38,6 +40,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/service_names.mojom.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/service_manager/public/cpp/manifest_builder.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;
@@ -219,16 +222,14 @@ BraveContentBrowserClient::GetNavigationUIData(
 
 const service_manager::Manifest& GetBraveContentBrowserOverlayManifest() {
   static base::NoDestructor<service_manager::Manifest> manifest {
-    MaybeAddTestInterfaces(
-        service_manager::ManifestBuilder()
-            .ExposeCapability("browser",
-                service_manager::Manifest::InterfaceList<
+    service_manager::ManifestBuilder()
+        .ExposeCapability("browser", service_manager::Manifest::InterfaceList<
                     chrome::mojom::SearchBouncer,
                     heap_profiling::mojom::ProfilingClient>())
-            .RequireCapability("bat_ads", "bat_ads")
-            .RequireCapability("bat_ledger", "bat_ledger")
-            .RequireCapability("tor_launcher", "tor_launcher")
-            .Build())
+        .RequireCapability("bat_ads", "bat_ads")
+        .RequireCapability("bat_ledger", "bat_ledger")
+        .RequireCapability("tor_launcher", "tor_launcher")
+        .Build()
   };
   return *manifest;
 }
