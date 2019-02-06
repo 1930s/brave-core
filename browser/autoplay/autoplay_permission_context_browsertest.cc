@@ -45,11 +45,11 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(embedded_test_server()->Start());
 
       autoplay_method_url_ =
-          embedded_test_server()->GetURL("a.com", "/autoplay_by_method.html");
+        embedded_test_server()->GetURL("a.com", "/autoplay_by_method.html");
       autoplay_attr_url_ =
-          embedded_test_server()->GetURL("a.com", "/autoplay_by_attr.html");
+        embedded_test_server()->GetURL("a.com", "/autoplay_by_attr.html");
       autoplay_method_muted_url_ =
-          embedded_test_server()->GetURL("a.com", "/autoplay_by_method_muted.html");
+        embedded_test_server()->GetURL("a.com", "/autoplay_by_method_muted.html");
       autoplay_attr_muted_url_ =
         embedded_test_server()->GetURL("a.com", "/autoplay_by_attr_muted.html");
       file_autoplay_method_url_ =
@@ -59,7 +59,7 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
         GURL("file://" + test_data_dir.AsUTF8Unsafe() +
              "/autoplay_by_attr.html");
       whitelist_autoplay_url_ =
-          embedded_test_server()->GetURL("example.com", "/autoplay_by_attr.html");
+        embedded_test_server()->GetURL("example.com", "/autoplay_by_attr.html");
 
       GURL pattern_url = embedded_test_server()->GetURL("a.com", "/index.html");
       top_level_page_pattern_ =
