@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version='1.0' encoding='UTF-8'?>
+<!--This file is created by l10nUtil.js. Do not edit manually.-->
 <grit-part>
   <message name="IDS_APP_MANAGEMENT_APP_LIST_PREVIEW" desc="A label that summarizes a list of apps by naming up to 3 apps, finishing with 'X more apps' for the rest.">
     {COUNT, plural,
