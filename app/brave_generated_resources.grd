@@ -166,6 +166,9 @@
       <message name="IDS_INSTALL_AND_RUN_WIDEVINE" desc="Button to install and register Widevine with the component updater.  'Widevine' is the name of a plugin and should not be translated.">
         Install and run Widevine
       </message>
+      <message name="IDS_INSTALL_AND_RESTART_BROWSER" desc="Button to download widevine restart browser. Then, widevinw is registered. 'Widevine' is the name of a plugin and should not be translated.">
+        Install and restart browser
+      </message>
       <message name="IDS_NOT_INSTALLED_WIDEVINE_TITLE" desc="Bubble info header text when Widevine is not installed. 'Widevine' is the name of a plugin and should not be translated.">
         Widevine is not installed
       </message>
