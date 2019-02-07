@@ -20,8 +20,6 @@
 #include "brave/components/brave_shields/browser/dat_file_util.h"
 #include "brave/vendor/autoplay-whitelist/autoplay_whitelist_parser.h"
 
-#include "base/logging.h"
-
 #define DAT_FILE "AutoplayWhitelist.dat"
 #define DAT_FILE_VERSION "1"
 
