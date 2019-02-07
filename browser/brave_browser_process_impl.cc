@@ -112,7 +112,6 @@ BraveBrowserProcessImpl::ad_block_regional_service() {
 
 brave_shields::AutoplayWhitelistService*
 BraveBrowserProcessImpl::autoplay_whitelist_service() {
-  LOG(ERROR) << "entering autoplay_whitelist_service";
   if (!autoplay_whitelist_service_) {
     autoplay_whitelist_service_ =
         brave_shields::AutoplayWhitelistServiceFactory();

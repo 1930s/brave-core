@@ -16,9 +16,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "brave/browser/brave_browser_process_impl.h"
 #include "brave/components/brave_shields/browser/ad_block_service.h"
-#include "brave/components/brave_shields/browser/autoplay_whitelist_parser.h"
 #include "brave/components/brave_shields/browser/local_data_files_service.h"
 #include "brave/components/brave_shields/browser/dat_file_util.h"
+#include "brave/vendor/autoplay-whitelist/autoplay_whitelist_parser.h"
 
 #include "base/logging.h"
 

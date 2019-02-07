@@ -22,9 +22,9 @@
 #include "content/public/common/resource_type.h"
 #include "url/gurl.h"
 
-namespace brave_shields {
-
 class AutoplayWhitelistParser;
+
+namespace brave_shields {
 
 // The brave shields service in charge of autoplay whitelist
 class AutoplayWhitelistService : public BaseLocalDataFilesObserver {
