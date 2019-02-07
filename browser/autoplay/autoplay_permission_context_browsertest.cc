@@ -137,19 +137,19 @@ class AutoplayPermissionContextBrowserTest : public InProcessBrowserTest {
     }
 
     content::WebContents* contents() {
-        return browser()->tab_strip_model()->GetActiveWebContents();
+      return browser()->tab_strip_model()->GetActiveWebContents();
     }
 
     bool NavigateToURLUntilLoadStop(const GURL& url) {
-        ui_test_utils::NavigateToURL(browser(), url);
-        return WaitForLoadStop(contents());
+      ui_test_utils::NavigateToURL(browser(), url);
+      return WaitForLoadStop(contents());
     }
 
     void WaitForPlaying() {
-        std::string msg_from_renderer;
-        ASSERT_TRUE(ExecuteScriptAndExtractString(contents(), "notifyWhenPlaying();",
-                                                  &msg_from_renderer));
-        ASSERT_EQ("PLAYING", msg_from_renderer);
+      std::string msg_from_renderer;
+      ASSERT_TRUE(ExecuteScriptAndExtractString(contents(), "notifyWhenPlaying();",
+                                                &msg_from_renderer));
+      ASSERT_EQ("PLAYING", msg_from_renderer);
     }
 
   private:
