@@ -25,8 +25,6 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "content/public/browser/browser_thread.h"
 
-#include "base/logging.h"
-
 BraveBrowserProcessImpl* g_brave_browser_process = nullptr;
 
 using content::BrowserThread;
