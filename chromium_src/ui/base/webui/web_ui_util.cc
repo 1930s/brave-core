@@ -20,7 +20,7 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   );
   localized_strings->SetString(
     "brToolbarBookmarksTitle",
-    l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE)
+    l10n_util::GetStringUTF16(IDS_MD_BOOKMARK_MANAGER_TITLE)
   );
   localized_strings->SetString(
     "brToolbarDownloadsTitle",
