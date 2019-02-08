@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+﻿<?xml version='1.0' encoding='UTF-8'?>
 <!-- This file contains definitions of strings that are distribution specific.
 If you update this file, be sure also to update google_chrome_strings.grd. -->
 <!--This file is created by l10nUtil.js. Do not edit manually.-->
@@ -310,7 +310,7 @@ Brave is unable to recover your settings.
       </if>
       <!-- Password generation strings -->
       <message name="IDS_PASSWORD_GENERATION_PROMPT" desc="Autofill dropdown text describing password generation.">
-        Brave will save this password in your Brave Account. You won’t have to remember it.
+        Brave will save this password in your Brave Account. You won't have to remember it.
       </message>
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble.">
         Brave
@@ -1047,16 +1047,16 @@ Please check your email at <ph name="ACCOUNT_EMAIL">$2<ex>jane.doe@example.com</
 
       <!-- Desktop to iOS promotion -->
       <message name="IDS_PASSWORD_MANAGER_DESKTOP_TO_IOS_PROMO_TEXT" desc="Text for Brave iOS Promotion appearing in the password bubble after a password is saved.">
-        Install Brave on your phone. We’ll send an SMS to your phone.
+        Install Brave on your phone. We'll send an SMS to your phone.
       </message>
       <message name="IDS_PASSWORD_MANAGER_DESKTOP_TO_IOS_PROMO_TEXT_WITH_PHONE_NUMBER" desc="Text for Brave iOS Promotion appearing in the password bubble after a password is saved.">
-        Install Brave on your phone. We’ll send an SMS to your phone: <ph name="PHONE_NUMBER">$1<ex>(650) 123-4567</ex></ph>
+        Install Brave on your phone. We'll send an SMS to your phone: <ph name="PHONE_NUMBER">$1<ex>(650) 123-4567</ex></ph>
       </message>
       <message name="IDS_PASSWORD_MANAGER_DESKTOP_TO_IOS_PROMO_TEXT_V2" desc="Text for Brave iOS Promotion appearing in the password bubble after a password is saved, this one mentioning explicitly that the SMS will be sent to the recovery phone number.">
-        Install Brave on your phone. We’ll send an SMS to your account recovery phone number.
+        Install Brave on your phone. We'll send an SMS to your account recovery phone number.
       </message>
       <message name="IDS_PASSWORD_MANAGER_DESKTOP_TO_IOS_PROMO_TEXT_WITH_PHONE_NUMBER_V2" desc="Text for Brave iOS Promotion appearing in the password bubble after a password is saved, this one mentioning explicitly that the SMS will be sent to the recovery phone number.">
-        Install Brave on your phone. We’ll send an SMS to your account recovery phone number: <ph name="PHONE_NUMBER">$1<ex>(650) 123-4567</ex></ph>
+        Install Brave on your phone. We'll send an SMS to your account recovery phone number: <ph name="PHONE_NUMBER">$1<ex>(650) 123-4567</ex></ph>
       </message>
       <message name="IDS_FOOTNOTE_DESKTOP_TO_IOS_PROMO_LINK" desc="Text of the link to get Brave on the iPhone from the Brave iOS promotion displayed on the bottom of bubbles.">
         get Brave on your iPhone
