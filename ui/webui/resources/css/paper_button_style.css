@@ -1,0 +1,26 @@
+/* Refer to:
+ * ui/webui/resources/cr_elements/paper_button_style_css.html
+ * for styles to override.
+ *
+ * Translation of variants from Paper to Brave:
+ * action-button = Primary (solid fill bg, white fg)
+ * default = Secondary (outline color bg, white bg, color fg)
+ *
+ */
+
+paper-button {
+  --text-or-bg-color: #242536 !important;
+  --brave-hover-color: #e7e7ec;
+  --paper-button-ink-color: #242536 !important;
+  font-family: Poppins;
+  border-radius: 20px !important;
+  border-color: currentColor !important;
+}
+
+paper-button.action-button:hover {
+  --text-or-bg-color: var(--brave-hover-color);
+}
+
+paper-button:not(.action-button):hover {
+  background-color: var(--brave-hover-color) !important;
+}
