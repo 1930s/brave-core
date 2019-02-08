@@ -1,16 +1,8 @@
 diff --git a/base/win/embedded_i18n/create_string_rc.py b/base/win/embedded_i18n/create_string_rc.py
-index d404cfd37d327e149771557cb37f56ed3a30b788..065b0f2e3a854f95abc77b7a3d7c212e99aa0e9a 100755
+index d404cfd37d327e149771557cb37f56ed3a30b788..3f021ebd0f157a7d68058adb52d345ce187d02eb 100755
 --- a/base/win/embedded_i18n/create_string_rc.py
 +++ b/base/win/embedded_i18n/create_string_rc.py
-@@ -71,6 +71,7 @@ sys.path.insert(1, os.path.join(BASEDIR, '../../../tools/grit'))
- sys.path.insert(2, os.path.join(BASEDIR, '../../../tools/python'))
- 
- from grit.extern import tclib
-+from chrome.installer.util.prebuild.create_string_rc import MODE_SPECIFIC_STRINGS
- 
- class GrdHandler(sax.handler.ContentHandler):
-   """Extracts selected strings from a .grd file.
-@@ -342,7 +343,10 @@ Extra input files:
+@@ -342,7 +342,10 @@ Extra input files:
      # Read the source (en-US) string from the .grd file.
      grd_handler = GrdHandler(self.string_id_set)
      sax_parser.setContentHandler(grd_handler)
