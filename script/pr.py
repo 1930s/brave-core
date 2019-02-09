@@ -40,9 +40,13 @@ branches_to_push = []
 
 def main():
     args = parse_args()
-    is_verbose = args.verbose
-    is_dryrun = args.dry_run
     print(args)
+
+    global is_verbose
+    is_verbose = args.verbose
+
+    global is_dryrun
+    is_dryrun = args.dry_run is True
 
     with scoped_cwd(BRAVE_CORE_ROOT):
         execute(['git', 'fetch', 'origin'])
@@ -79,7 +83,7 @@ def main():
 
     # Create a branch for each channel
     print('\nCreating branches...')
-    base = get_channel_bases(remote_nightly_version)
+    base = get_channel_bases(local_version)
     try:
         for channel in channel_names:
             branch = create_branch(channel, base[channel], local_branch)
@@ -220,7 +224,7 @@ def submit_pr(repo, channel, title, base, branch, args):
         # create the pull request
         # for more info see: http://developer.github.com/v3/pulls
         print('(' + channel + ') creating pull request')
-        if is_dryrun:
+        if is_dryrun is True:
             print('[INFO] would call `repo.pulls.post(' + str(pr_details) + ')`')
             response = {'number': 123}
         else:
@@ -236,7 +240,7 @@ def submit_pr(repo, channel, title, base, branch, args):
         if len(parsed_reviewers) > 0:
             patched_data['reviewers'] = parsed_reviewers
 
-        if is_dryrun:
+        if is_dryrun is True:
             print('[INFO] would call `repo.pulls(' + number + ').requested_reviewers.post(' + str(patched_data) + ')`')
         else:
             response = repo.pulls(number).requested_reviewers.post(data=patched_data)
@@ -251,7 +255,7 @@ def submit_pr(repo, channel, title, base, branch, args):
         parsed_assignees = parse_logins(args.owners)
         if len(parsed_assignees) > 0:
             patched_data['assignees'] = parsed_assignees
-        if is_dryrun:
+        if is_dryrun is True:
             print('[INFO] would call `repo.issues(' + number + ').patch(' + str(patched_data) + ')`')
         else:
             response = repo.issues(number).patch(data=patched_data)
